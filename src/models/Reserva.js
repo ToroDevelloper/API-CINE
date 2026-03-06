@@ -28,7 +28,7 @@ const reservaSchema = new mongoose.Schema({
     },
     fecha_reserva: {
         type: Date,
-        default: Date.now
+        default: Date.now()
     },
     codigo_qr: {
         type: String,
