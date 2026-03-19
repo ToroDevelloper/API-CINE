@@ -251,7 +251,9 @@
                 "exec": [
                   "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -259,7 +261,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/usuarios/ID_AQUI",
+              "raw": "http://localhost:3000/api/usuarios/69bc69d074e763131ccb6263",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -268,7 +270,7 @@
               "path": [
                 "api",
                 "usuarios",
-                "ID_AQUI"
+                "69bc69d074e763131ccb6263"
               ]
             }
           },
@@ -392,7 +394,9 @@
                 "exec": [
                   "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -401,7 +405,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"nombre\": \"Sala 1\",\n    \"capacidad\": 50,\n    \"tipo\": \"2D\"\n}",
+              "raw": "{\n    \"nombre\": \"Sala 2\",\n    \"capacidad\": 50,\n    \"tipo\": \"2D\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -464,7 +468,9 @@
                 "exec": [
                   "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -481,7 +487,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:3000/api/salas/ID_AQUI",
+              "raw": "http://localhost:3000/api/salas/69bc6a3774e763131ccb626e",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -490,7 +496,7 @@
               "path": [
                 "api",
                 "salas",
-                "ID_AQUI"
+                "69bc6a3774e763131ccb626e"
               ]
             }
           },
@@ -637,7 +643,9 @@
                 "exec": [
                   "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -646,7 +654,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"titulo\": \"Movie 1\",\n    \"sinopsis\": \"Sinopsis text\",\n    \"duracion\": 120,\n    \"genero\": [\n        \"Accion\"\n    ],\n    \"clasificacion\": \"+12\",\n    \"director\": \"Director\",\n    \"idioma\": \"ES\",\n    \"formato\": [\n        \"2D\"\n    ]\n}",
+              "raw": "{\n    \"titulo\": \"Dune: Parte Dos\",\n    \"sinopsis\": \"Paul Atreides se une a Chani y a los Fremen mientras busca venganza contra los conspiradores que destruyeron a su familia.\",\n    \"duracion_min\": 166,\n    \"generos\": [\"Ciencia Ficción\", \"Aventura\", \"Drama\"],\n    \"idioma\": \"Español Latino\",\n    \"clasificacion\": \"PG-13\",\n    \"director\": \"Denis Villeneuve\",\n    \"actores\": [\"Timothée Chalamet\", \"Zendaya\", \"Rebecca Ferguson\"],\n    \"poster_url\": \"https://midominio.com/poster/dune-2.jpg\",\n    \"fecha_estreno\": \"2026-04-19T00:00:00.000Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -787,7 +795,9 @@
                 "exec": [
                   "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -795,7 +805,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/asientos/sala/SALA_ID",
+              "raw": "http://localhost:3000/api/asientos/sala/69bc6cffabaefb3b79b24128",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -805,7 +815,7 @@
                 "api",
                 "asientos",
                 "sala",
-                "SALA_ID"
+                "69bc6cffabaefb3b79b24128"
               ]
             }
           },
@@ -860,7 +870,9 @@
                 "exec": [
                   "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -869,7 +881,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"sala\": \"SALA_ID\",\n    \"filas\": 5,\n    \"asientosPorFila\": 10\n}",
+              "raw": "{ \n    \"sala_id\": \"69bc6cffabaefb3b79b24128\", \n    \"filas\": \"A,B,C,D,E\", \n    \"asientosPorFila\": 10,\n    \"tipo\": \"normal\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -901,7 +913,9 @@
                 "exec": [
                   "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -909,7 +923,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/asientos/ID_AQUI",
+              "raw": "http://localhost:3000/api/asientos/69bc6d12abaefb3b79b2412c",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -918,7 +932,7 @@
               "path": [
                 "api",
                 "asientos",
-                "ID_AQUI"
+                "69bc6d12abaefb3b79b2412c"
               ]
             }
           },
@@ -1042,7 +1056,9 @@
                 "exec": [
                   "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1050,7 +1066,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/funciones/pelicula/PELICULA_ID",
+              "raw": "http://localhost:3000/api/funciones/pelicula/69bc6b8d74e763131ccb6287",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -1060,7 +1076,7 @@
                 "api",
                 "funciones",
                 "pelicula",
-                "PELICULA_ID"
+                "69bc6b8d74e763131ccb6287"
               ]
             }
           },
@@ -1075,7 +1091,9 @@
                 "exec": [
                   "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1084,7 +1102,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"pelicula\": \"PELICULA_ID\",\n    \"sala\": \"SALA_ID\",\n    \"fechaHora\": \"2026-12-31T20:00:00.000Z\",\n    \"precio\": 50\n}",
+              "raw": "{\n    \"pelicula_id\": \"69bc6b8d74e763131ccb6287\",\n    \"sala_id\": \"69bc6cffabaefb3b79b24128\",\n    \"fecha_hora\": \"2026-12-31T20:00:00.000Z\",\n    \"precio_base\": 50\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1115,7 +1133,9 @@
                 "exec": [
                   "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1123,7 +1143,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/funciones/ID_AQUI",
+              "raw": "http://localhost:3000/api/funciones/69bc6dbeabaefb3b79b24168",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -1132,7 +1152,7 @@
               "path": [
                 "api",
                 "funciones",
-                "ID_AQUI"
+                "69bc6dbeabaefb3b79b24168"
               ]
             }
           },
@@ -1290,7 +1310,9 @@
                 "exec": [
                   "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1299,7 +1321,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"funcion\": \"FUNCION_ID\",\n    \"asientos\": [\n        \"ASIENTO_ID_1\",\n        \"ASIENTO_ID_2\"\n    ]\n}",
+              "raw": "{\n    \"funcion_id\": \"69bc6dbeabaefb3b79b24168\",\n    \"asientos_ids\": [\n        \"69bc6d12abaefb3b79b2412c\"\n       \n    ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1471,7 +1493,9 @@
                 "exec": [
                   "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1480,7 +1504,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"reserva\": \"RESERVA_ID\",\n    \"metodoPago\": \"Tarjeta\"\n}",
+              "raw": "{\n    \"reserva_id\": \"69bc6e73abaefb3b79b2417a\",\n    \"metodo_pago\": \"paypal\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1542,7 +1566,9 @@
                 "exec": [
                   "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1550,7 +1576,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/pagos/ID_AQUI",
+              "raw": "http://localhost:3000/api/pagos/69bc6ee2abaefb3b79b24189",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -1559,7 +1585,7 @@
               "path": [
                 "api",
                 "pagos",
-                "ID_AQUI"
+                "69bc6ee2abaefb3b79b24189"
               ]
             }
           },
@@ -1574,7 +1600,9 @@
                 "exec": [
                   "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1582,7 +1610,7 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/pagos/ID_AQUI/reembolso",
+              "raw": "http://localhost:3000/api/pagos/69bc6ee2abaefb3b79b24189/reembolso",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -1591,7 +1619,7 @@
               "path": [
                 "api",
                 "pagos",
-                "ID_AQUI",
+                "69bc6ee2abaefb3b79b24189",
                 "reembolso"
               ]
             }
@@ -1643,7 +1671,9 @@
                 "exec": [
                   "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1652,7 +1682,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"nombre\": \"Palomitas\",\n    \"descripcion\": \"Palomitas grandes\",\n    \"precio\": 5.5,\n    \"categoria\": \"Comida\",\n    \"stock\": 100\n}",
+              "raw": "{\n    \"nombre\": \"Palomitas\",\n    \"descripcion\": \"Palomitas grandes\",\n    \"precio\": 5.5,\n    \"categoria\": \"palomitas\",\n    \"stock\": 100\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1683,7 +1713,9 @@
                 "exec": [
                   "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1691,7 +1723,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:3000/api/snacks/ID_AQUI",
+              "raw": "http://localhost:3000/api/snacks/69bc6f52abaefb3b79b2419f",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -1700,7 +1732,7 @@
               "path": [
                 "api",
                 "snacks",
-                "ID_AQUI"
+                "69bc6f52abaefb3b79b2419f"
               ]
             }
           },
@@ -1825,7 +1857,9 @@
                 "exec": [
                   "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -1834,7 +1868,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"reserva\": \"RESERVA_ID\",\n    \"snacks\": [\n        {\n            \"snack\": \"SNACK_ID\",\n            \"cantidad\": 2\n        }\n    ]\n}",
+              "raw": "{\n    \"reserva_id\": \"69bc6e73abaefb3b79b2417a\",\n    \"items\": [\n        {\n            \"snack_id\": \"69bc6f52abaefb3b79b2419f\",\n            \"cantidad\": 2\n        }\n    ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
