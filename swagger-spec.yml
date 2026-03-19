@@ -1,0 +1,2688 @@
+openapi: 3.0.3
+
+info:
+  title: API de Cine
+  description: |
+    API RESTful para la gestión de un sistema de cine. Permite administrar películas,
+    funciones, salas, asientos, reservas, pagos, snacks y usuarios.
+  version: 1.0.0
+  contact:
+    name: API-CINE
+
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor de desarrollo local
+
+tags:
+  - name: Health
+    description: Estado de la API
+  - name: Auth
+    description: Autenticación y gestión de sesión
+  - name: Usuarios
+    description: Administración de usuarios (solo admin)
+  - name: Películas
+    description: Catálogo de películas
+  - name: Salas
+    description: Salas del cine
+  - name: Asientos
+    description: Asientos por sala
+  - name: Funciones
+    description: Funciones programadas
+  - name: Reservas
+    description: Reservas de asientos
+  - name: Pagos
+    description: Procesamiento de pagos
+  - name: Pedidos Snacks
+    description: Pedidos de snacks y bebidas
+
+# ─────────────────────────────────────────────
+#  SECURITY SCHEMES
+# ─────────────────────────────────────────────
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT obtenido al hacer login o registro
+
+  # ─────────────────────────────────────────────
+  #  SCHEMAS
+  # ─────────────────────────────────────────────
+  schemas:
+
+    # ── Respuestas genéricas ──────────────────
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Recurso no encontrado
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    # ── Usuario ───────────────────────────────
+    Usuario:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 664a1b2c3d4e5f6789abcdef
+        nombre:
+          type: string
+          example: Juan
+        apellido:
+          type: string
+          example: Pérez
+        email:
+          type: string
+          format: email
+          example: juan@email.com
+        telefono:
+          type: string
+          example: "+573001234567"
+        rol:
+          type: string
+          enum: [cliente, admin, empleado]
+          example: cliente
+        activo:
+          type: boolean
+          example: true
+        fecha_registro:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UsuarioConToken:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            _id:
+              type: string
+            nombre:
+              type: string
+            apellido:
+              type: string
+            email:
+              type: string
+            rol:
+              type: string
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    RegistroInput:
+      type: object
+      required: [nombre, apellido, email, password]
+      properties:
+        nombre:
+          type: string
+          example: Juan
+        apellido:
+          type: string
+          example: Pérez
+        email:
+          type: string
+          format: email
+          example: juan@email.com
+        password:
+          type: string
+          minLength: 6
+          example: "secreto123"
+        telefono:
+          type: string
+          example: "+573001234567"
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: juan@email.com
+        password:
+          type: string
+          example: "secreto123"
+
+    ActualizarDatosInput:
+      type: object
+      properties:
+        nombre:
+          type: string
+        apellido:
+          type: string
+        telefono:
+          type: string
+
+    CambiarPasswordInput:
+      type: object
+      required: [passwordActual, nuevaPassword]
+      properties:
+        passwordActual:
+          type: string
+        nuevaPassword:
+          type: string
+          minLength: 6
+
+    # ── Película ──────────────────────────────
+    Pelicula:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 664a1b2c3d4e5f6789abcdef
+        titulo:
+          type: string
+          example: Avengers Endgame
+        sinopsis:
+          type: string
+        duracion_min:
+          type: integer
+          example: 182
+        generos:
+          type: array
+          items:
+            type: string
+          example: [acción, aventura]
+        idioma:
+          type: string
+          example: inglés
+        clasificacion:
+          type: string
+          enum: [G, PG, PG-13, R, NC-17, A, B, B15, C, D]
+          example: PG-13
+        director:
+          type: string
+          example: Anthony Russo
+        actores:
+          type: array
+          items:
+            type: string
+        poster_url:
+          type: string
+          format: uri
+        fecha_estreno:
+          type: string
+          format: date-time
+        activa:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PeliculaInput:
+      type: object
+      required: [titulo, sinopsis, duracion_min, idioma, clasificacion, fecha_estreno]
+      properties:
+        titulo:
+          type: string
+        sinopsis:
+          type: string
+        duracion_min:
+          type: integer
+          minimum: 1
+        generos:
+          type: array
+          items:
+            type: string
+        idioma:
+          type: string
+        clasificacion:
+          type: string
+          enum: [G, PG, PG-13, R, NC-17, A, B, B15, C, D]
+        director:
+          type: string
+        actores:
+          type: array
+          items:
+            type: string
+        poster_url:
+          type: string
+          format: uri
+        fecha_estreno:
+          type: string
+          format: date-time
+
+    # ── Sala ──────────────────────────────────
+    Sala:
+      type: object
+      properties:
+        _id:
+          type: string
+        nombre:
+          type: string
+          example: Sala 1
+        capacidad:
+          type: integer
+          example: 120
+        tipo:
+          type: string
+          enum: [2D, 3D, IMAX, 4DX, VIP]
+          example: IMAX
+        activa:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    SalaInput:
+      type: object
+      required: [nombre, capacidad]
+      properties:
+        nombre:
+          type: string
+        capacidad:
+          type: integer
+          minimum: 1
+        tipo:
+          type: string
+          enum: [2D, 3D, IMAX, 4DX, VIP]
+
+    # ── Asiento ───────────────────────────────
+    Asiento:
+      type: object
+      properties:
+        _id:
+          type: string
+        sala_id:
+          type: string
+          description: ID de la sala
+        fila:
+          type: string
+          example: A
+        numero:
+          type: integer
+          example: 5
+        tipo:
+          type: string
+          enum: [normal, vip, preferencial, pareja, discapacitado]
+          example: normal
+        createdAt:
+          type: string
+          format: date-time
+
+    AsientoInput:
+      type: object
+      required: [sala_id, fila, numero]
+      properties:
+        sala_id:
+          type: string
+        fila:
+          type: string
+          example: B
+        numero:
+          type: integer
+          minimum: 1
+        tipo:
+          type: string
+          enum: [normal, vip, preferencial, pareja, discapacitado]
+
+    AsientoBulkInput:
+      type: object
+      required: [sala_id, filas, asientosPorFila]
+      properties:
+        sala_id:
+          type: string
+        filas:
+          type: string
+          description: Letras de filas separadas por coma
+          example: "A,B,C,D"
+        asientosPorFila:
+          type: integer
+          minimum: 1
+          example: 15
+        tipo:
+          type: string
+          enum: [normal, vip, preferencial, pareja, discapacitado]
+
+    AsientoConDisponibilidad:
+      allOf:
+        - $ref: '#/components/schemas/Asiento'
+        - type: object
+          properties:
+            disponible:
+              type: boolean
+              example: true
+
+    # ── Función ───────────────────────────────
+    Funcion:
+      type: object
+      properties:
+        _id:
+          type: string
+        pelicula_id:
+          $ref: '#/components/schemas/Pelicula'
+        sala_id:
+          $ref: '#/components/schemas/Sala'
+        fecha_hora:
+          type: string
+          format: date-time
+          example: "2024-12-25T20:00:00Z"
+        precio_base:
+          type: number
+          example: 15000
+        idioma:
+          type: string
+          enum: [español, subtitulada, doblada]
+          example: subtitulada
+        formato:
+          type: string
+          enum: [2D, 3D, IMAX, 4DX]
+          example: IMAX
+        activa:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+
+    FuncionInput:
+      type: object
+      required: [pelicula_id, sala_id, fecha_hora, precio_base]
+      properties:
+        pelicula_id:
+          type: string
+        sala_id:
+          type: string
+        fecha_hora:
+          type: string
+          format: date-time
+        precio_base:
+          type: number
+          minimum: 0
+        idioma:
+          type: string
+          enum: [español, subtitulada, doblada]
+        formato:
+          type: string
+          enum: [2D, 3D, IMAX, 4DX]
+
+    # ── Reserva ───────────────────────────────
+    Reserva:
+      type: object
+      properties:
+        _id:
+          type: string
+        usuario_id:
+          $ref: '#/components/schemas/Usuario'
+        funcion_id:
+          $ref: '#/components/schemas/Funcion'
+        asientos_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/Asiento'
+        total:
+          type: number
+          example: 45000
+        estado:
+          type: string
+          enum: [pendiente, confirmada, cancelada, completada]
+          example: pendiente
+        fecha_reserva:
+          type: string
+          format: date-time
+        codigo_qr:
+          type: string
+          example: RES-1718000000000-AB3XZ9
+        createdAt:
+          type: string
+          format: date-time
+
+    ReservaInput:
+      type: object
+      required: [funcion_id, asientos_ids]
+      properties:
+        funcion_id:
+          type: string
+        asientos_ids:
+          type: array
+          minItems: 1
+          items:
+            type: string
+          example: ["664a1b2c3d4e5f6789abc001", "664a1b2c3d4e5f6789abc002"]
+
+    ReservaUpdateInput:
+      type: object
+      properties:
+        estado:
+          type: string
+          enum: [pendiente, confirmada, cancelada, completada]
+
+    # ── Pago ──────────────────────────────────
+    Pago:
+      type: object
+      properties:
+        _id:
+          type: string
+        reserva_id:
+          $ref: '#/components/schemas/Reserva'
+        usuario_id:
+          $ref: '#/components/schemas/Usuario'
+        monto:
+          type: number
+          example: 45000
+        metodo_pago:
+          type: string
+          enum: [tarjeta_credito, tarjeta_debito, efectivo, paypal, transferencia]
+        estado:
+          type: string
+          enum: [pendiente, procesando, completado, fallido, reembolsado]
+        referencia:
+          type: string
+          example: PAY-1718000000000-XY9ZAB
+        fecha_pago:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    PagoInput:
+      type: object
+      required: [reserva_id, metodo_pago]
+      properties:
+        reserva_id:
+          type: string
+        metodo_pago:
+          type: string
+          enum: [tarjeta_credito, tarjeta_debito, efectivo, paypal, transferencia]
+
+    PagoUpdateInput:
+      type: object
+      properties:
+        estado:
+          type: string
+          enum: [pendiente, procesando, completado, fallido, reembolsado]
+
+    # ── Snack ─────────────────────────────────
+    Snack:
+      type: object
+      properties:
+        _id:
+          type: string
+        nombre:
+          type: string
+          example: Palomitas grandes
+        descripcion:
+          type: string
+        precio:
+          type: number
+          example: 8000
+        categoria:
+          type: string
+          enum: [palomitas, bebidas, dulces, combos, nachos, otros]
+        imagen_url:
+          type: string
+          format: uri
+        disponible:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+
+    SnackInput:
+      type: object
+      required: [nombre, precio, categoria]
+      properties:
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        precio:
+          type: number
+          minimum: 0
+        categoria:
+          type: string
+          enum: [palomitas, bebidas, dulces, combos, nachos, otros]
+        imagen_url:
+          type: string
+          format: uri
+
+    # ── Pedido Snack ──────────────────────────
+    PedidoSnack:
+      type: object
+      properties:
+        _id:
+          type: string
+        reserva_id:
+          type: string
+        usuario_id:
+          $ref: '#/components/schemas/Usuario'
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              snack_id:
+                $ref: '#/components/schemas/Snack'
+              cantidad:
+                type: integer
+              precio_unitario:
+                type: number
+              subtotal:
+                type: number
+        total:
+          type: number
+          example: 24000
+        estado:
+          type: string
+          enum: [pendiente, preparando, listo, entregado, cancelado]
+        fecha_pedido:
+          type: string
+          format: date-time
+
+    PedidoSnackInput:
+      type: object
+      required: [items]
+      properties:
+        reserva_id:
+          type: string
+        items:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [snack_id, cantidad]
+            properties:
+              snack_id:
+                type: string
+              cantidad:
+                type: integer
+                minimum: 1
+
+    PedidoUpdateInput:
+      type: object
+      properties:
+        estado:
+          type: string
+          enum: [pendiente, preparando, listo, entregado, cancelado]
+
+# ─────────────────────────────────────────────
+#  PATHS
+# ─────────────────────────────────────────────
+paths:
+
+  # ════════════════════════════════
+  #  HEALTH
+  # ════════════════════════════════
+  /health:
+    get:
+      tags: [Health]
+      summary: Verificar estado de la API
+      responses:
+        "200":
+          description: API funcionando correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: API funcionando correctamente
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  # ════════════════════════════════
+  #  AUTH
+  # ════════════════════════════════
+  /auth/registro:
+    post:
+      tags: [Auth]
+      summary: Registrar nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistroInput'
+      responses:
+        "201":
+          description: Usuario registrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioConToken'
+        "400":
+          description: El email ya está registrado o datos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "422":
+          description: Errores de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+      responses:
+        "200":
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioConToken'
+        "400":
+          description: Email o contraseña no proporcionados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Credenciales inválidas o usuario desactivado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Obtener perfil del usuario autenticado
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Datos del usuario actual
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Usuario'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/actualizar:
+    put:
+      tags: [Auth]
+      summary: Actualizar datos del usuario autenticado
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarDatosInput'
+      responses:
+        "200":
+          description: Datos actualizados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Usuario'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/cambiar-password:
+    put:
+      tags: [Auth]
+      summary: Cambiar contraseña del usuario autenticado
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CambiarPasswordInput'
+      responses:
+        "200":
+          description: Contraseña actualizada correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Contraseña actualizada correctamente
+        "401":
+          description: Contraseña actual incorrecta o no autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ════════════════════════════════
+  #  USUARIOS
+  # ════════════════════════════════
+  /usuarios:
+    get:
+      tags: [Usuarios]
+      summary: Listar todos los usuarios (admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Usuario'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Acceso denegado — se requiere rol admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /usuarios/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: ID MongoDB del usuario
+    get:
+      tags: [Usuarios]
+      summary: Obtener un usuario por ID (admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Datos del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Usuario'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Acceso denegado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Usuarios]
+      summary: Actualizar usuario (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarDatosInput'
+      responses:
+        "200":
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Usuario'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Usuarios]
+      summary: Desactivar usuario (soft delete — admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Usuario desactivado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Usuario desactivado correctamente
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ════════════════════════════════
+  #  PELÍCULAS
+  # ════════════════════════════════
+  /peliculas:
+    get:
+      tags: [Películas]
+      summary: Listar todas las películas
+      parameters:
+        - name: genero
+          in: query
+          schema:
+            type: string
+        - name: clasificacion
+          in: query
+          schema:
+            type: string
+            enum: [G, PG, PG-13, R, NC-17, A, B, B15, C, D]
+        - name: activa
+          in: query
+          schema:
+            type: boolean
+        - name: buscar
+          in: query
+          description: Búsqueda de texto en título y sinopsis
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de películas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pelicula'
+    post:
+      tags: [Películas]
+      summary: Crear película (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeliculaInput'
+      responses:
+        "201":
+          description: Película creada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Pelicula'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Acceso denegado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "422":
+          description: Errores de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /peliculas/cartelera:
+    get:
+      tags: [Películas]
+      summary: Obtener películas en cartelera (estreno ≤ hoy, activas)
+      responses:
+        "200":
+          description: Películas en cartelera
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pelicula'
+
+  /peliculas/proximos-estrenos:
+    get:
+      tags: [Películas]
+      summary: Obtener próximos estrenos (estreno > hoy, activas)
+      responses:
+        "200":
+          description: Próximos estrenos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pelicula'
+
+  /peliculas/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Películas]
+      summary: Obtener película por ID
+      responses:
+        "200":
+          description: Datos de la película
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Pelicula'
+        "404":
+          description: Película no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Películas]
+      summary: Actualizar película (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeliculaInput'
+      responses:
+        "200":
+          description: Película actualizada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Pelicula'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Película no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Películas]
+      summary: Desactivar película — soft delete (admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Película desactivada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Película desactivada correctamente
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Película no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ════════════════════════════════
+  #  SALAS
+  # ════════════════════════════════
+  /salas:
+    get:
+      tags: [Salas]
+      summary: Listar salas
+      parameters:
+        - name: tipo
+          in: query
+          schema:
+            type: string
+            enum: [2D, 3D, IMAX, 4DX, VIP]
+        - name: activa
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Lista de salas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Sala'
+    post:
+      tags: [Salas]
+      summary: Crear sala (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalaInput'
+      responses:
+        "201":
+          description: Sala creada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Sala'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Acceso denegado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /salas/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Salas]
+      summary: Obtener sala por ID
+      responses:
+        "200":
+          description: Datos de la sala
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Sala'
+        "404":
+          description: Sala no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Salas]
+      summary: Actualizar sala (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalaInput'
+      responses:
+        "200":
+          description: Sala actualizada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Sala'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Sala no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Salas]
+      summary: Desactivar sala — soft delete (admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Sala desactivada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Sala desactivada correctamente
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Sala no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ════════════════════════════════
+  #  ASIENTOS
+  # ════════════════════════════════
+  /asientos/sala/{salaId}:
+    get:
+      tags: [Asientos]
+      summary: Obtener asientos de una sala
+      parameters:
+        - name: salaId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de asientos de la sala
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Asiento'
+
+  /asientos:
+    post:
+      tags: [Asientos]
+      summary: Crear asiento individual (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AsientoInput'
+      responses:
+        "201":
+          description: Asiento creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Asiento'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Sala no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /asientos/bulk:
+    post:
+      tags: [Asientos]
+      summary: Crear asientos en bloque para una sala (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AsientoBulkInput'
+      responses:
+        "201":
+          description: Asientos creados en bloque
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Asiento'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Sala no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /asientos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Asientos]
+      summary: Obtener asiento por ID
+      responses:
+        "200":
+          description: Datos del asiento
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Asiento'
+        "404":
+          description: Asiento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Asientos]
+      summary: Actualizar asiento (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AsientoInput'
+      responses:
+        "200":
+          description: Asiento actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Asiento'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Asiento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Asientos]
+      summary: Eliminar asiento (admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Asiento eliminado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Asiento eliminado correctamente
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Asiento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ════════════════════════════════
+  #  FUNCIONES
+  # ════════════════════════════════
+  /funciones:
+    get:
+      tags: [Funciones]
+      summary: Listar funciones
+      parameters:
+        - name: pelicula_id
+          in: query
+          schema:
+            type: string
+        - name: sala_id
+          in: query
+          schema:
+            type: string
+        - name: formato
+          in: query
+          schema:
+            type: string
+            enum: [2D, 3D, IMAX, 4DX]
+        - name: activa
+          in: query
+          schema:
+            type: boolean
+        - name: fecha
+          in: query
+          description: Filtrar por fecha (ISO 8601)
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Lista de funciones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Funcion'
+    post:
+      tags: [Funciones]
+      summary: Crear función (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FuncionInput'
+      responses:
+        "201":
+          description: Función creada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Funcion'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Película o sala no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /funciones/pelicula/{peliculaId}:
+    get:
+      tags: [Funciones]
+      summary: Obtener funciones activas y futuras de una película
+      parameters:
+        - name: peliculaId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Funciones de la película
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Funcion'
+
+  /funciones/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Funciones]
+      summary: Obtener función por ID
+      responses:
+        "200":
+          description: Datos de la función
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Funcion'
+        "404":
+          description: Función no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Funciones]
+      summary: Actualizar función (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FuncionInput'
+      responses:
+        "200":
+          description: Función actualizada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Funcion'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Función no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Funciones]
+      summary: Desactivar función — soft delete (admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Función desactivada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Función desactivada correctamente
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Función no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ════════════════════════════════
+  #  RESERVAS
+  # ════════════════════════════════
+  /reservas/asientos-disponibles/{funcionId}:
+    get:
+      tags: [Reservas]
+      summary: Obtener disponibilidad de asientos para una función (público)
+      parameters:
+        - name: funcionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Asientos con disponibilidad marcada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AsientoConDisponibilidad'
+        "404":
+          description: Función no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /reservas/mis-reservas:
+    get:
+      tags: [Reservas]
+      summary: Obtener reservas del usuario autenticado
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Reservas del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Reserva'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /reservas:
+    get:
+      tags: [Reservas]
+      summary: Listar todas las reservas (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: estado
+          in: query
+          schema:
+            type: string
+            enum: [pendiente, confirmada, cancelada, completada]
+        - name: usuario_id
+          in: query
+          schema:
+            type: string
+        - name: funcion_id
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de todas las reservas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Reserva'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Acceso denegado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags: [Reservas]
+      summary: Crear reserva
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservaInput'
+      responses:
+        "201":
+          description: Reserva creada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Reserva'
+        "400":
+          description: Función pasada, asientos inválidos o ya reservados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Función no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /reservas/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Reservas]
+      summary: Obtener reserva por ID (dueño o admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Datos de la reserva
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Reserva'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: No autorizado para ver esta reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Reserva no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Reservas]
+      summary: Actualizar estado de reserva (dueño o admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservaUpdateInput'
+      responses:
+        "200":
+          description: Reserva actualizada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Reserva'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: No autorizado para modificar esta reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Reserva no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Reservas]
+      summary: Cancelar reserva — soft delete (dueño o admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Reserva cancelada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Reserva cancelada correctamente
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: No autorizado para cancelar esta reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Reserva no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ════════════════════════════════
+  #  PAGOS
+  # ════════════════════════════════
+  /pagos/mis-pagos:
+    get:
+      tags: [Pagos]
+      summary: Obtener pagos del usuario autenticado
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Pagos del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pago'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /pagos:
+    get:
+      tags: [Pagos]
+      summary: Listar todos los pagos (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: estado
+          in: query
+          schema:
+            type: string
+            enum: [pendiente, procesando, completado, fallido, reembolsado]
+        - name: metodo_pago
+          in: query
+          schema:
+            type: string
+            enum: [tarjeta_credito, tarjeta_debito, efectivo, paypal, transferencia]
+      responses:
+        "200":
+          description: Lista de pagos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pago'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Acceso denegado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags: [Pagos]
+      summary: Procesar pago de una reserva
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PagoInput'
+      responses:
+        "201":
+          description: Pago procesado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Pago'
+        "400":
+          description: Reserva ya pagada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: No autorizado para pagar esta reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Reserva no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /pagos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Pagos]
+      summary: Obtener pago por ID (dueño o admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Datos del pago
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Pago'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: No autorizado para ver este pago
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Pago no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Pagos]
+      summary: Actualizar estado del pago (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PagoUpdateInput'
+      responses:
+        "200":
+          description: Pago actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Pago'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Pago no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /pagos/{id}/reembolso:
+    post:
+      tags: [Pagos]
+      summary: Solicitar reembolso de un pago completado
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reembolso procesado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Reembolso procesado correctamente
+        "400":
+          description: Solo se pueden reembolsar pagos completados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: No es el dueño del pago
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Pago no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ════════════════════════════════
+  #  SNACKS
+  # ════════════════════════════════
+  /snacks:
+    get:
+      tags: [Pedidos Snacks]
+      summary: Listar snacks disponibles
+      parameters:
+        - name: categoria
+          in: query
+          schema:
+            type: string
+            enum: [palomitas, bebidas, dulces, combos, nachos, otros]
+        - name: disponible
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Lista de snacks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Snack'
+    post:
+      tags: [Pedidos Snacks]
+      summary: Crear snack (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnackInput'
+      responses:
+        "201":
+          description: Snack creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Snack'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /snacks/categoria/{categoria}:
+    get:
+      tags: [Pedidos Snacks]
+      summary: Obtener snacks disponibles por categoría
+      parameters:
+        - name: categoria
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [palomitas, bebidas, dulces, combos, nachos, otros]
+      responses:
+        "200":
+          description: Snacks de la categoría
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Snack'
+
+  /snacks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Pedidos Snacks]
+      summary: Obtener snack por ID
+      responses:
+        "200":
+          description: Datos del snack
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Snack'
+        "404":
+          description: Snack no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Pedidos Snacks]
+      summary: Actualizar snack (admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnackInput'
+      responses:
+        "200":
+          description: Snack actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Snack'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Snack no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Pedidos Snacks]
+      summary: Desactivar snack — soft delete (admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Snack desactivado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Snack desactivado correctamente
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Snack no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ════════════════════════════════
+  #  PEDIDOS SNACKS
+  # ════════════════════════════════
+  /pedidos-snacks/mis-pedidos:
+    get:
+      tags: [Pedidos Snacks]
+      summary: Obtener pedidos del usuario autenticado
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Pedidos del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PedidoSnack'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /pedidos-snacks:
+    get:
+      tags: [Pedidos Snacks]
+      summary: Listar todos los pedidos (admin / empleado)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: estado
+          in: query
+          schema:
+            type: string
+            enum: [pendiente, preparando, listo, entregado, cancelado]
+        - name: usuario_id
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de pedidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PedidoSnack'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags: [Pedidos Snacks]
+      summary: Crear pedido de snacks
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PedidoSnackInput'
+      responses:
+        "201":
+          description: Pedido creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PedidoSnack'
+        "400":
+          description: Snack no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /pedidos-snacks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Pedidos Snacks]
+      summary: Obtener pedido por ID (dueño o admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Datos del pedido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PedidoSnack'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: No autorizado para ver este pedido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Pedido no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags: [Pedidos Snacks]
+      summary: Actualizar estado del pedido (admin / empleado)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PedidoUpdateInput'
+      responses:
+        "200":
+          description: Pedido actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PedidoSnack'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Pedido no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Pedidos Snacks]
+      summary: Cancelar pedido pendiente (dueño o admin)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Pedido cancelado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: Pedido cancelado correctamente
+        "400":
+          description: Solo se pueden cancelar pedidos pendientes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: No autorizado para cancelar este pedido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Pedido no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

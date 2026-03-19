@@ -1,6 +1,7 @@
 const Reserva = require('../models/Reserva');
 const Funcion = require('../models/Funcion');
 const Asiento = require('../models/Asiento');
+const { validarReserva, validarEstadoReserva } = require('../utils/validators');
 
 // @desc    Obtener todas las reservas
 // @route   GET /api/reservas
@@ -108,6 +109,16 @@ exports.createReserva = async (req, res, next) => {
     try {
         const { funcion_id, asientos_ids } = req.body;
 
+        // ── Validación de campos con validators.js ────────────────────────────
+        const { valido, errores } = validarReserva({ funcion_id, asientos_ids });
+        if (!valido) {
+            return res.status(400).json({
+                success: false,
+                message: 'Datos de reserva inválidos.',
+                errores
+            });
+        }
+
         // Verificar que la función existe y está activa
         const funcion = await Funcion.findById(funcion_id);
         if (!funcion || !funcion.activa) {
@@ -176,6 +187,16 @@ exports.createReserva = async (req, res, next) => {
 // @access  Private
 exports.updateReserva = async (req, res, next) => {
     try {
+        // ── Validación del estado con validators.js ───────────────────────────
+        const { valido, errores } = validarEstadoReserva(req.body.estado);
+        if (!valido) {
+            return res.status(400).json({
+                success: false,
+                message: 'Estado de reserva inválido.',
+                errores
+            });
+        }
+
         let reserva = await Reserva.findById(req.params.id);
 
         if (!reserva) {
