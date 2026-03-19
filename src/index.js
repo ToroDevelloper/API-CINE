@@ -2,6 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const path = require('path');
 const connectDB = require('./config/database');
 const routes = require('./routes');
 const { errorHandler, notFound } = require('./middlewares');
@@ -16,6 +20,11 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// Documentación Swagger
+const swaggerDocument = YAML.load(path.join(__dirname, '../swagger-spec.yml'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Logger en desarrollo
 if (process.env.NODE_ENV !== 'production') {
@@ -43,10 +52,13 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 
 // Iniciar servidor
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-    console.log(`📍 http://localhost:${PORT}`);
-    console.log(`📍 API: http://localhost:${PORT}/api`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+        console.log(`📡 http://localhost:${PORT}`);
+        console.log(`📡 API: http://localhost:${PORT}/api`);
+        console.log(`📝 Documentación: http://localhost:${PORT}/api-docs`);
+    });
+}
 
 module.exports = app;

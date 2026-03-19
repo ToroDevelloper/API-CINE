@@ -14,7 +14,7 @@ const errorHandler = (err, req, res, next) => {
 
     // Error de Mongoose - Duplicado
     if (err.code === 11000) {
-        const field = Object.keys(err.keyValue)[0];
+        const field = err.keyValue ? Object.keys(err.keyValue)[0] : 'desconocido';
         const message = `El valor del campo '${field}' ya existe`;
         error = { message, statusCode: 400 };
     }

@@ -1,5 +1,7 @@
 # 🎬 API de Cine
 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://toro-8471920.postman.co/workspace/Toro's-Workspace~03f006b1-3540-4d16-84ff-c1237478285a/collection/44244336-62acc6a7-252f-4af3-a381-b41820e85ace?action=share&creator=44244336)
+
 API REST para un sistema de gestión de cine desarrollada con Node.js, Express y MongoDB (Mongoose).
 
 ## 📂 Estructura del Proyecto

@@ -7,8 +7,10 @@ const protegerRuta = async (req, res, next) => {
     try {
         let token;
 
-        // Verificar si hay token en el header
-        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        // Verificar si hay token en cookie o header
+        if (req.cookies && req.cookies.token) {
+            token = req.cookies.token;
+        } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
             token = req.headers.authorization.split(' ')[1];
         }
 

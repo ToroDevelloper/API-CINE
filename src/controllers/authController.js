@@ -14,7 +14,7 @@ const generarToken = (id) => {
 // @access  Public
 exports.registro = async (req, res, next) => {
     try {
-        const { nombre, apellido, email, password, telefono } = req.body;
+        const { nombre, apellido, email, password, telefono, rol} = req.body;
 
         // Verificar si el usuario ya existe
         const usuarioExiste = await Usuario.findOne({ email });
@@ -31,11 +31,18 @@ exports.registro = async (req, res, next) => {
             apellido,
             email,
             password_hash: password,
-            telefono
+            telefono,
+            rol: rol || 'usuario'
         });
 
         // Generar token
         const token = generarToken(usuario._id);
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 24 * 60 * 60 * 1000 // 1 día
+        });
 
         res.status(201).json({
             success: true,
@@ -97,6 +104,12 @@ exports.login = async (req, res, next) => {
 
         // Generar token
         const token = generarToken(usuario._id);
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 24 * 60 * 60 * 1000 // 1 día
+        });
 
         res.status(200).json({
             success: true,
