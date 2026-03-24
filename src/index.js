@@ -35,7 +35,7 @@ if (process.env.NODE_ENV !== 'production') {
 app.get('/', (req, res) => {
     res.json({
         success: true,
-        message: '🎬 API de Cine - Bienvenido',
+        message: 'API de Cine - Bienvenido',
         version: '1.0.0',
         endpoints: '/api'
     });
