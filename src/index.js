@@ -54,10 +54,10 @@ const PORT = process.env.PORT || 3000;
 // Iniciar servidor
 if (process.env.NODE_ENV !== 'test') {
     app.listen(PORT, () => {
-        console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-        console.log(`📡 http://localhost:${PORT}`);
-        console.log(`📡 API: http://localhost:${PORT}/api`);
-        console.log(`📝 Documentación: http://localhost:${PORT}/api-docs`);
+        console.log(`Servidor corriendo en puerto ${PORT}`);
+        console.log(`http://localhost:${PORT}`);
+        console.log(`API: http://localhost:${PORT}/api`);
+        console.log(`Documentación: http://localhost:${PORT}/api-docs`);
     });
 }
 
