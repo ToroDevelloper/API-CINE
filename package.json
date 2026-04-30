@@ -1,38 +1,39 @@
 {
-    "name":  "api-cine",
-    "version":  "1.0.0",
-    "description":  "API REST para sistema de cine con Express y MongoDB",
-    "main":  "src/index.js",
-    "scripts":  {
-                    "start":  "node src/index.js",
-                    "dev":  "nodemon src/index.js",
-                    "test":  "jest"
-                },
-    "keywords":  [
-                     "api",
-                     "cine",
-                     "express",
-                     "mongodb",
-                     "mongoose"
-                 ],
-    "author":  "",
-    "license":  "ISC",
-    "dependencies":  {
-                         "bcryptjs":  "^2.4.3",
-                         "cookie-parser":  "^1.4.7",
-                         "cors":  "^2.8.5",
-                         "dotenv":  "^16.3.1",
-                         "express":  "^4.18.2",
-                         "express-validator":  "^7.0.1",
-                         "jsonwebtoken":  "^9.0.2",
-                         "mongoose":  "^8.0.3",
-                         "morgan":  "^1.10.0",
-                         "swagger-ui-express":  "^5.0.1",
-                         "yamljs":  "^0.3.0"
-                     },
-    "devDependencies":  {
-                            "jest":  "^30.3.0",
-                            "nodemon":  "^3.0.2",
-                            "supertest":  "^7.2.2"
-                        }
+    "name": "api-cine",
+    "version": "1.0.0",
+    "description": "API REST para sistema de cine con Express y MongoDB",
+    "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "seed": "node seed.js"
+  },
+    "keywords": [
+        "api",
+        "cine",
+        "express",
+        "mongodb",
+        "mongoose"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
+        "dotenv": "^16.6.1",
+        "express": "^4.18.2",
+        "express-validator": "^7.0.1",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.0.3",
+        "morgan": "^1.10.0",
+        "swagger-ui-express": "^5.0.1",
+        "yamljs": "^0.3.0"
+    },
+    "devDependencies": {
+        "jest": "^30.3.0",
+        "nodemon": "^3.0.2",
+        "supertest": "^7.2.2"
+    }
 }

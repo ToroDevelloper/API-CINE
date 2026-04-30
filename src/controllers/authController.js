@@ -14,7 +14,7 @@ const generarToken = (id) => {
 // @access  Public
 exports.registro = async (req, res, next) => {
     try {
-        const { nombre, apellido, email, password, telefono, rol} = req.body;
+        const { nombre, email, password } = req.body;
 
         // Verificar si el usuario ya existe
         const usuarioExiste = await Usuario.findOne({ email });
@@ -28,11 +28,8 @@ exports.registro = async (req, res, next) => {
         // Crear usuario
         const usuario = await Usuario.create({
             nombre,
-            apellido,
             email,
-            password_hash: password,
-            telefono,
-            rol: rol || 'usuario'
+            password_hash: password
         });
 
         // Generar token
@@ -41,7 +38,7 @@ exports.registro = async (req, res, next) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000 // 1 día
+            maxAge: 24 * 60 * 60 * 1000
         });
 
         res.status(201).json({
@@ -49,7 +46,6 @@ exports.registro = async (req, res, next) => {
             data: {
                 _id: usuario._id,
                 nombre: usuario.nombre,
-                apellido: usuario.apellido,
                 email: usuario.email,
                 rol: usuario.rol
             },
