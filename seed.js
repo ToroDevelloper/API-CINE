@@ -1,6 +1,8 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Pelicula = require('./src/models/Pelicula');
+const Usuario = require('./src/models/Usuario');
+const bcrypt = require('bcryptjs');
 
 const peliculas = [
     {
@@ -11,7 +13,7 @@ const peliculas = [
         idioma: 'Inglés',
         clasificacion: 'PG-13',
         fecha_estreno: new Date('2022-12-16'),
-        poster_url: 'https://image.tmdb.org/t/p/w500/t6HIqrRA5aYpF4f2EZ9pCKgggU.jpg',
+        poster_url: 'https://i.redd.it/mxgifuk46jx91.jpg',
         activa: true
     },
     {
@@ -22,7 +24,7 @@ const peliculas = [
         idioma: 'Inglés',
         clasificacion: 'PG-13',
         fecha_estreno: new Date('2022-05-27'),
-        poster_url: 'https://image.tmdb.org/t/p/w500/62HCnUTD9yOSXl8aPrDNl3yJC1R.jpg',
+        poster_url: 'https://i.redd.it/5d7pxlv8eax81.jpg',
         activa: true
     },
     {
@@ -33,7 +35,7 @@ const peliculas = [
         idioma: 'Inglés',
         clasificacion: 'PG-13',
         fecha_estreno: new Date('2023-07-21'),
-        poster_url: 'https://image.tmdb.org/t/p/w500/TTh3rYm3pBLFFrRHsXRFhMYglW.jpg',
+        poster_url: 'https://image.tmdb.org/t/p/original/fNtqD4BTFj0Bgo9lyoAtmNFzxHN.jpg',
         activa: true
     },
     {
@@ -44,7 +46,7 @@ const peliculas = [
         idioma: 'Inglés',
         clasificacion: 'R',
         fecha_estreno: new Date('2023-07-21'),
-        poster_url: 'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zmnTRI.jpg',
+        poster_url: 'https://i.redd.it/4nj1l524d1ya1.jpg',
         activa: true
     },
     {
@@ -55,10 +57,18 @@ const peliculas = [
         idioma: 'Inglés',
         clasificacion: 'PG-13',
         fecha_estreno: new Date('2022-03-04'),
-        poster_url: 'https://image.tmdb.org/t/p/w500/74xTEgt7R36FpruvZr1F3J7QE8.jpg',
+        poster_url: 'https://i.imgur.com/FENEQMQ.jpg',
         activa: true
     }
 ];
+
+const adminSeed = {
+    nombre: process.env.SEED_ADMIN_NOMBRE || 'Administrador',
+    apellido: process.env.SEED_ADMIN_APELLIDO || 'Sistema',
+    email: process.env.SEED_ADMIN_EMAIL || 'admin@cine.com',
+    password: process.env.SEED_ADMIN_PASSWORD || 'Admin1234',
+    rol: 'admin'
+};
 
 const seedDB = async () => {
     try {
@@ -70,6 +80,29 @@ const seedDB = async () => {
         
         await Pelicula.insertMany(peliculas);
         console.log('Películas insertadas exitosamente');
+
+        const passwordHash = await bcrypt.hash(adminSeed.password, 12);
+
+        await Usuario.findOneAndUpdate(
+            { email: adminSeed.email },
+            {
+                $set: {
+                    nombre: adminSeed.nombre,
+                    apellido: adminSeed.apellido,
+                    password_hash: passwordHash,
+                    rol: adminSeed.rol,
+                    activo: true
+                }
+            },
+            {
+                new: true,
+                upsert: true,
+                runValidators: true,
+                setDefaultsOnInsert: true
+            }
+        );
+
+        console.log(`Usuario admin listo: ${adminSeed.email}`);
         
         process.exit(0);
     } catch (error) {
