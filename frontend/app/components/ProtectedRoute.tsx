@@ -1,6 +1,6 @@
 import { Navigate } from "react-router";
-import { useAuth } from "../context/auth";
 import type { ReactNode } from "react";
+import { useAuthStore } from "../stores/useAuthStore";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -22,7 +22,12 @@ export default function ProtectedRoute({
   children, 
   requiredRole 
 }: ProtectedRouteProps) {
-  const { isAuthenticated, user } = useAuth();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isLoading = useAuthStore((s) => s.isLoading);
+
+  if (isLoading) {
+    return null;
+  }
 
   // No está autenticado: redirigir a login
   if (!isAuthenticated) {

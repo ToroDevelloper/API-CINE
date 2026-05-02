@@ -1,11 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router";
-import { useAuth } from "../context/auth";
+import { useAuthStore } from "../stores/useAuthStore";
 import { useState } from "react";
 import { Home, Film, Ticket, Settings, LogOut, Star } from "lucide-react";
 
 export default function Sidebar() {
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
@@ -18,7 +19,7 @@ export default function Sidebar() {
   ];
 
   const handleLogout = () => {
-    logout();
+    void logout();
     navigate("/", { replace: true });
   };
 

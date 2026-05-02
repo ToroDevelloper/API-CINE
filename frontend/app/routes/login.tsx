@@ -1,5 +1,5 @@
 import { Form, useNavigate } from "react-router";
-import { useAuth } from "../context/auth";
+import { useAuthStore } from "../stores/useAuthStore";
 import type { Route } from "./+types/login";
 import { useState } from "react";
 import { Mail, Lock } from "lucide-react";
@@ -9,7 +9,8 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Login() {
-  const { login, isLoading } = useAuth();
+  const login = useAuthStore((s) => s.login);
+  const isLoading = useAuthStore((s) => s.isLoading);
   const navigate = useNavigate();
   const [error, setError] = useState<string>("");
 

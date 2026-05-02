@@ -1,15 +1,17 @@
 import { Link, useNavigate } from "react-router";
-import { useAuth } from "../context/auth";
+import { useAuthStore } from "../stores/useAuthStore";
 import { useState } from "react";
 import { User, LogOut, Settings, Bell, Menu } from "lucide-react";
 
 export default function Navbar() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const logout = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleLogout = () => {
-    logout();
+    void logout();
     setShowUserMenu(false);
     navigate("/", { replace: true });
   };

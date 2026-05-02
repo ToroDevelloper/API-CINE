@@ -7,8 +7,10 @@ import {
   ScrollRestoration,
 } from "react-router";
 
+import { useEffect } from "react";
+
 import type { Route } from "./+types/root";
-import { AuthProvider } from "./context/auth";
+import { useAuthStore } from "./stores/useAuthStore";
 import "./app.css";
 
 /**
@@ -29,8 +31,8 @@ export const links: Route.LinksFunction = () => [
 
 /**
  * Layout raíz - Estructura HTML
- * Envuelve toda la aplicación con AuthProvider para disponibilidad global
- * del contexto de autenticación
+ * Estructura del documento HTML.
+ * La sesión se inicializa en `App` usando Zustand (sin Context API).
  */
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -43,11 +45,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-[#131313] text-white font-inter">
-        <AuthProvider>
-          {children}
-          <ScrollRestoration />
-          <Scripts />
-        </AuthProvider>
+        {children}
+        <ScrollRestoration />
+        <Scripts />
       </body>
     </html>
   );
@@ -59,6 +59,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
  * (PublicLayout para rutas públicas, DashboardLayout para protegidas)
  */
 export default function App() {
+  useEffect(() => {
+    void useAuthStore.getState().init();
+  }, []);
+
   return <Outlet />;
 }
 

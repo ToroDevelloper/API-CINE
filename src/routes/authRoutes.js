@@ -6,6 +6,7 @@ const { protegerRuta } = require('../middlewares/auth');
 const {
     registro,
     login,
+    logout,
     getMe,
     actualizarDatos,
     cambiarPassword
@@ -29,6 +30,7 @@ const validacionesLogin = [
 // Rutas públicas
 router.post('/registro', validacionesRegistro, registro);
 router.post('/login', validacionesLogin, login);
+router.post('/logout', logout);
 
 // Rutas protegidas
 router.get('/me', protegerRuta, getMe);
