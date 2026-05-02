@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router";
 import { useEffect } from "react";
-import { useAuth } from "../../context/auth";
+import { useAuthStore } from "../../stores/useAuthStore";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 
@@ -12,18 +12,19 @@ import Navbar from "../../components/Navbar";
  * - Mantiene componentes fijos mientras <Outlet /> cambia el contenido
  */
 export default function DashboardLayout() {
-  const { isAuthenticated, user } = useAuth();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isLoading = useAuthStore((s) => s.isLoading);
   const navigate = useNavigate();
 
   // Verificar autenticación y redirigir si no está autenticado
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoading && !isAuthenticated) {
       navigate("/login", { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isLoading, navigate]);
 
   // Si no está autenticado, no renderizar nada (será redirigido)
-  if (!isAuthenticated) {
+  if (isLoading || !isAuthenticated) {
     return null;
   }
 

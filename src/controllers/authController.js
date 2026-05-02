@@ -14,7 +14,7 @@ const generarToken = (id) => {
 // @access  Public
 exports.registro = async (req, res, next) => {
     try {
-        const { nombre, email, password } = req.body;
+        const { nombre, apellido, email, password } = req.body;
 
         // Verificar si el usuario ya existe
         const usuarioExiste = await Usuario.findOne({ email });
@@ -28,6 +28,7 @@ exports.registro = async (req, res, next) => {
         // Crear usuario
         const usuario = await Usuario.create({
             nombre,
+            apellido,
             email,
             password_hash: password
         });
@@ -46,6 +47,7 @@ exports.registro = async (req, res, next) => {
             data: {
                 _id: usuario._id,
                 nombre: usuario.nombre,
+                apellido: usuario.apellido,
                 email: usuario.email,
                 rol: usuario.rol
             },
@@ -190,6 +192,26 @@ exports.cambiarPassword = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: 'Contraseña actualizada correctamente'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Logout usuario (borra cookie JWT)
+// @route   POST /api/auth/logout
+// @access  Public
+exports.logout = async (req, res, next) => {
+    try {
+        res.cookie('token', '', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            expires: new Date(0)
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'Sesión cerrada'
         });
     } catch (error) {
         next(error);
