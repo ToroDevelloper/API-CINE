@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Play, Plus, Clapperboard } from "lucide-react";
+import { useAuthStore } from "../stores/useAuthStore";
 
 interface Pelicula {
   _id: string;
@@ -15,6 +16,7 @@ interface Pelicula {
 export default function Home() {
   const [peliculas, setPeliculas] = useState<Pelicula[]>([]);
   const [peliculaDestacada, setPeliculaDestacada] = useState<Pelicula | null>(null);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   useEffect(() => {
     fetch("http://localhost:3000/api/peliculas")
@@ -51,14 +53,18 @@ export default function Home() {
             </p>
             <div className="flex gap-4">
               <Link
-                to="/login"
+                to={
+                  isAuthenticated
+                    ? `/dashboard/reservas?peliculaId=${peliculaDestacada._id}`
+                    : "/login"
+                }
                 className="bg-white hover:bg-gray-200 text-black font-semibold py-3 px-8 rounded flex items-center gap-2 transition-colors text-lg"
               >
                 <Plus className="w-5 h-5" />
                 Reservar
               </Link>
               <Link
-                to="/register"
+                to={isAuthenticated ? "/dashboard/reservas" : "/register"}
                 className="bg-[#ffffff33] hover:bg-[#ffffff4d] text-white font-semibold py-3 px-8 rounded transition-colors text-lg backdrop-blur-sm flex items-center gap-2"
               >
                 <Plus className="w-5 h-5" />
