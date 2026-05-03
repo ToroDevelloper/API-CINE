@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import { useEffect } from "react";
+import { ToastProvider } from "./components/ToastProvider";
 
 import type { Route } from "./+types/root";
 import { useAuthStore } from "./stores/useAuthStore";
@@ -63,7 +64,11 @@ export default function App() {
     void useAuthStore.getState().init();
   }, []);
 
-  return <Outlet />;
+  return (
+    <ToastProvider>
+      <Outlet />
+    </ToastProvider>
+  );
 }
 
 /**

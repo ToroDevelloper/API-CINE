@@ -12,6 +12,8 @@ import {
   type Pelicula,
   type Reserva,
 } from "../../services/cineService";
+import { LoadingSpinner } from "../../components/Notifications";
+import { useAppToast } from "../../components/ToastProvider";
 
 function formatFecha(fechaISO: string) {
   const d = new Date(fechaISO);
@@ -25,6 +27,7 @@ function formatFecha(fechaISO: string) {
 }
 
 export default function Reservas() {
+  const { addToast } = useAppToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [peliculas, setPeliculas] = useState<Pelicula[]>([]);
@@ -53,7 +56,9 @@ export default function Reservas() {
         setReservas(mis);
       } catch (e) {
         if (!alive) return;
-        setError(e instanceof Error ? e.message : "Error cargando datos");
+        const msg = e instanceof Error ? e.message : "Error cargando datos";
+        setError(msg);
+        try { addToast({ type: "error", title: msg }); } catch {}
       } finally {
         if (!alive) return;
         setIsLoading(false);
@@ -92,7 +97,9 @@ export default function Reservas() {
         setFunciones(data);
       } catch (e) {
         if (!alive) return;
-        setError(e instanceof Error ? e.message : "Error cargando funciones");
+        const msg = e instanceof Error ? e.message : "Error cargando funciones";
+        setError(msg);
+        try { addToast({ type: "error", title: msg }); } catch {}
       }
     })();
     return () => {
@@ -114,7 +121,9 @@ export default function Reservas() {
         setAsientos(data);
       } catch (e) {
         if (!alive) return;
-        setError(e instanceof Error ? e.message : "Error cargando asientos");
+        const msg = e instanceof Error ? e.message : "Error cargando asientos";
+        setError(msg);
+        try { addToast({ type: "error", title: msg }); } catch {}
       }
     })();
     return () => {
@@ -149,11 +158,15 @@ export default function Reservas() {
     setSuccess("");
 
     if (!funcionId) {
-      setError("Selecciona una función");
+      const msg = "Selecciona una función";
+      setError(msg);
+      try { addToast({ type: "warning", title: msg }); } catch {}
       return;
     }
     if (asientosSeleccionados.size === 0) {
-      setError("Selecciona al menos 1 asiento");
+      const msg = "Selecciona al menos 1 asiento";
+      setError(msg);
+      try { addToast({ type: "warning", title: msg }); } catch {}
       return;
     }
 
@@ -166,12 +179,16 @@ export default function Reservas() {
 
       const mis = await getMisReservas();
       setReservas(mis);
-      setSuccess("Reserva creada correctamente");
+      const msg = "Reserva creada correctamente";
+      setSuccess(msg);
+      try { addToast({ type: "success", title: msg }); } catch {}
       setFuncionId("");
       setAsientos([]);
       setAsientosSeleccionados(new Set());
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Error creando reserva");
+      const msg = e instanceof Error ? e.message : "Error creando reserva";
+      setError(msg);
+      try { addToast({ type: "error", title: msg }); } catch {}
     } finally {
       setIsCreating(false);
     }
@@ -184,9 +201,13 @@ export default function Reservas() {
       await cancelarReserva(id);
       const mis = await getMisReservas();
       setReservas(mis);
-      setSuccess("Reserva cancelada");
+      const msg = "Reserva cancelada";
+      setSuccess(msg);
+      try { addToast({ type: "success", title: msg }); } catch {}
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Error cancelando reserva");
+      const msg = e instanceof Error ? e.message : "Error cancelando reserva";
+      setError(msg);
+      try { addToast({ type: "error", title: msg }); } catch {}
     }
   };
 
@@ -216,7 +237,9 @@ export default function Reservas() {
         <h2 className="text-xl font-bold">Nueva Reserva</h2>
 
         {isLoading ? (
-          <p className="text-[#999]">Cargando...</p>
+          <div className="flex items-center justify-center py-8">
+            <LoadingSpinner size="lg" text="Cargando..." />
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
