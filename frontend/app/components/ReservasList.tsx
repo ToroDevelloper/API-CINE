@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getMisReservas } from '../service/reservaService';
+import { getMisReservas } from '../services/reservaService';
 import { Card, CardHeader } from './ui/Card';
 import { Alert } from './ui/Alert';
 import { Badge } from './ui/Badge';

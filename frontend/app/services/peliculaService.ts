@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+import { apiFetch } from "./apiClient";
 
 export interface Pelicula {
   _id: string;
@@ -12,31 +12,14 @@ export interface Pelicula {
   genero?: string[];
 }
 
-async function fetchWithTimeout(url: string, options: RequestInit = {}, timeout = 5000): Promise<Response> {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
-  
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
-    clearTimeout(id);
-    return response;
-  } catch (error) {
-    clearTimeout(id);
-    throw error;
-  }
-}
+type ApiResponse<T> = {
+  success?: boolean;
+  data?: T;
+  message?: string;
+};
 
 export async function getPeliculas(): Promise<Pelicula[]> {
-  try {
-    const response = await fetchWithTimeout(`${API_URL}/peliculas`);
-    if (!response.ok) throw new Error("Error al obtener películas");
-    const data = await response.json();
-    return data.data || data || [];
-  } catch (error) {
-    console.error("Error fetching películas:", error);
-    return [];
-  }
+  const res = await apiFetch<ApiResponse<Pelicula[]>>("/api/peliculas");
+  return res?.data ?? [];
 }
+

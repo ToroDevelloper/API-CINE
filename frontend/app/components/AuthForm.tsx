@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { login, register } from '../service/authService';
+import { login, register } from '../services/authService';
 import { Card, CardHeader } from './ui/Card';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';

@@ -1,7 +1,5 @@
-const DEFAULT_API_BASE_URL = "http://localhost:3000";
-
-export const API_BASE_URL: string =
-  (import.meta as any).env?.VITE_API_URL ?? DEFAULT_API_BASE_URL;
+import type { AxiosRequestConfig } from "axios";
+import axiosInstance from "./axiosInstance";
 
 export type ApiErrorPayload = {
   success?: false;
@@ -9,43 +7,37 @@ export type ApiErrorPayload = {
   errors?: unknown;
 };
 
-export async function apiFetch<T>(
-  path: string,
-  options: (RequestInit & { json?: unknown }) = {}
-): Promise<T> {
-  const url = path.startsWith("http")
-    ? path
-    : `${API_BASE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
+type ApiFetchOptions = Omit<RequestInit, "body" | "headers"> & {
+  headers?: Record<string, string>;
+  json?: unknown;
+  body?: any;
+  params?: Record<string, unknown>;
+};
 
-  const headers = new Headers(options.headers);
+export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
+  const method = (options.method ?? "GET").toUpperCase();
 
-  let body: BodyInit | undefined = options.body as BodyInit | undefined;
+  const config: AxiosRequestConfig = {
+    url: path,
+    method: method as AxiosRequestConfig["method"],
+    headers: options.headers,
+    params: options.params,
+  };
+
   if (options.json !== undefined) {
-    headers.set("Content-Type", "application/json");
-    body = JSON.stringify(options.json);
+    config.data = options.json;
+    config.headers = { "Content-Type": "application/json", ...(config.headers ?? {}) };
+  } else if (options.body !== undefined) {
+    config.data = options.body;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-    body,
-    credentials: "include",
-  });
-
-  if (response.ok) {
-    if (response.status === 204) {
-      return undefined as T;
-    }
-    return (await response.json()) as T;
-  }
-
-  let message = `Error HTTP ${response.status}`;
   try {
-    const payload = (await response.json()) as ApiErrorPayload;
-    if (payload?.message) message = payload.message;
-  } catch {
-    // ignore
+    const response = await axiosInstance.request<T>(config);
+    return response.data;
+  } catch (error: any) {
+    const payload = error?.response?.data as ApiErrorPayload | undefined;
+    const message = payload?.message ?? error?.message ?? "Error de red";
+    throw new Error(message);
   }
-
-  throw new Error(message);
 }
+

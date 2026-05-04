@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getUsuarios } from '../service/usuarioService';
+import { getUsuarios } from '../services/usuarioService';
 import { Card } from './ui/Card';
 import { Alert } from './ui/Alert';
 import { Avatar } from './ui/Avatar';

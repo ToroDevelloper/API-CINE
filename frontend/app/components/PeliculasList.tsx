@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getPeliculas } from '../service/peliculaService';
+import { getPeliculas, type Pelicula } from '../services/peliculaService';
 import { Card, CardHeader } from './ui/Card';
 import { Alert } from './ui/Alert';
 import { Badge } from './ui/Badge';
@@ -7,7 +7,7 @@ import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
 
 const PeliculasList: React.FC = () => {
-    const [peliculas, setPeliculas] = useState([]);
+    const [peliculas, setPeliculas] = useState<Pelicula[]>([]);
     const [error, setError] = useState('');
     const [selectedPelicula, setSelectedPelicula] = useState<any>(null);
 
