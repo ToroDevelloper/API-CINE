@@ -30,7 +30,7 @@ export default function Login() {
         setError("Email o contraseña incorrectos");
       }
     } catch (err) {
-      setError("Error al iniciar sesión. Intenta de nuevo.");
+      setError(err instanceof Error ? err.message : "Error al iniciar sesión. Intenta de nuevo.");
     }
   };
 

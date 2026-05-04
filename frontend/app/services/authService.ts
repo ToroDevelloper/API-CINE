@@ -7,8 +7,13 @@ export const login = async (credentials: { email: string; password: string }) =>
   });
 };
 
-export const register = async (userData: { name: string; email: string; password: string }) => {
-  return apiFetch("/api/auth/register", {
+export const register = async (userData: {
+  nombre: string;
+  apellido: string;
+  email: string;
+  password: string;
+}) => {
+  return apiFetch("/api/auth/registro", {
     method: "POST",
     json: userData,
   });
