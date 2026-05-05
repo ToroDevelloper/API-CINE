@@ -29,6 +29,30 @@ type Pages = {
   "/dashboard/reservas": {
     params: {};
   };
+  "/dashboard/reservas/checkout": {
+    params: {};
+  };
+  "/dashboard/usuarios": {
+    params: {};
+  };
+  "/dashboard/salas": {
+    params: {};
+  };
+  "/dashboard/asientos": {
+    params: {};
+  };
+  "/dashboard/funciones": {
+    params: {};
+  };
+  "/dashboard/snacks": {
+    params: {};
+  };
+  "/dashboard/pedidos": {
+    params: {};
+  };
+  "/dashboard/pagos": {
+    params: {};
+  };
   "/dashboard/configuracion": {
     params: {};
   };
@@ -37,7 +61,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/login" | "/register" | "/dashboard" | "/dashboard/peliculas" | "/dashboard/reservas" | "/dashboard/configuracion";
+    page: "/" | "/login" | "/register" | "/dashboard" | "/dashboard/peliculas" | "/dashboard/reservas" | "/dashboard/reservas/checkout" | "/dashboard/usuarios" | "/dashboard/salas" | "/dashboard/asientos" | "/dashboard/funciones" | "/dashboard/snacks" | "/dashboard/pedidos" | "/dashboard/pagos" | "/dashboard/configuracion";
   };
   "routes/layout.public.tsx": {
     id: "routes/layout.public";
@@ -57,7 +81,7 @@ type RouteFiles = {
   };
   "routes/dashboard/layout.tsx": {
     id: "routes/dashboard/layout";
-    page: "/dashboard" | "/dashboard/peliculas" | "/dashboard/reservas" | "/dashboard/configuracion";
+    page: "/dashboard" | "/dashboard/peliculas" | "/dashboard/reservas" | "/dashboard/reservas/checkout" | "/dashboard/usuarios" | "/dashboard/salas" | "/dashboard/asientos" | "/dashboard/funciones" | "/dashboard/snacks" | "/dashboard/pedidos" | "/dashboard/pagos" | "/dashboard/configuracion";
   };
   "routes/dashboard/home.tsx": {
     id: "routes/dashboard/home";
@@ -70,6 +94,38 @@ type RouteFiles = {
   "routes/dashboard/reservas.tsx": {
     id: "routes/dashboard/reservas";
     page: "/dashboard/reservas";
+  };
+  "routes/dashboard/order-details.tsx": {
+    id: "routes/dashboard/order-details";
+    page: "/dashboard/reservas/checkout";
+  };
+  "routes/dashboard/usuarios.tsx": {
+    id: "routes/dashboard/usuarios";
+    page: "/dashboard/usuarios";
+  };
+  "routes/dashboard/salas.tsx": {
+    id: "routes/dashboard/salas";
+    page: "/dashboard/salas";
+  };
+  "routes/dashboard/asientos.tsx": {
+    id: "routes/dashboard/asientos";
+    page: "/dashboard/asientos";
+  };
+  "routes/dashboard/funciones.tsx": {
+    id: "routes/dashboard/funciones";
+    page: "/dashboard/funciones";
+  };
+  "routes/dashboard/snacks.tsx": {
+    id: "routes/dashboard/snacks";
+    page: "/dashboard/snacks";
+  };
+  "routes/dashboard/pedidos.tsx": {
+    id: "routes/dashboard/pedidos";
+    page: "/dashboard/pedidos";
+  };
+  "routes/dashboard/pagos.tsx": {
+    id: "routes/dashboard/pagos";
+    page: "/dashboard/pagos";
   };
   "routes/dashboard/configuracion.tsx": {
     id: "routes/dashboard/configuracion";
@@ -87,5 +143,13 @@ type RouteModules = {
   "routes/dashboard/home": typeof import("./app/routes/dashboard/home.tsx");
   "routes/dashboard/peliculas": typeof import("./app/routes/dashboard/peliculas.tsx");
   "routes/dashboard/reservas": typeof import("./app/routes/dashboard/reservas.tsx");
+  "routes/dashboard/order-details": typeof import("./app/routes/dashboard/order-details.tsx");
+  "routes/dashboard/usuarios": typeof import("./app/routes/dashboard/usuarios.tsx");
+  "routes/dashboard/salas": typeof import("./app/routes/dashboard/salas.tsx");
+  "routes/dashboard/asientos": typeof import("./app/routes/dashboard/asientos.tsx");
+  "routes/dashboard/funciones": typeof import("./app/routes/dashboard/funciones.tsx");
+  "routes/dashboard/snacks": typeof import("./app/routes/dashboard/snacks.tsx");
+  "routes/dashboard/pedidos": typeof import("./app/routes/dashboard/pedidos.tsx");
+  "routes/dashboard/pagos": typeof import("./app/routes/dashboard/pagos.tsx");
   "routes/dashboard/configuracion": typeof import("./app/routes/dashboard/configuracion.tsx");
 };

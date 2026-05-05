@@ -15,9 +15,6 @@ import { useAuthStore } from "./stores/useAuthStore";
 import { useThemeStore } from "./stores/useThemeStore";
 import "./app.css";
 
-/**
- * Links (estilos globales, fuentes, etc.)
- */
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -27,15 +24,14 @@ export const links: Route.LinksFunction = () => [
   },
   {
     rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap",
+  },
+  {
+    rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
   },
 ];
 
-/**
- * Layout raíz - Estructura HTML
- * Estructura del documento HTML.
- * La sesión se inicializa en `App` usando Zustand (sin Context API).
- */
 export function Layout({ children }: { children: React.ReactNode }) {
   const theme = useThemeStore((s) => s.theme);
 
@@ -48,7 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="font-inter">
+      <body className="font-['Be_Vietnam_Pro']">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -57,11 +53,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-/**
- * App raíz - Renderiza las rutas
- * Los Layouts anidados se encargan de la estructura específica
- * (PublicLayout para rutas públicas, DashboardLayout para protegidas)
- */
 export default function App() {
   useEffect(() => {
     void useAuthStore.getState().init();
@@ -74,11 +65,8 @@ export default function App() {
   );
 }
 
-/**
- * Error Boundary - Captura errores en las rutas
- * Muestra página de error amigable cuando algo falla
- */
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  const theme = useThemeStore((s) => s.theme);
   let message = "¡Ups! Algo salió mal";
   let details = "Ocurrió un error inesperado.";
   let stack: string | undefined;
@@ -94,20 +82,22 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     stack = error.stack;
   }
 
+  const isDark = theme === "dark";
+
   return (
-    <div className="min-h-screen bg-[#131313] text-white flex items-center justify-center p-4">
+    <div className={`min-h-screen flex items-center justify-center p-4 ${isDark ? "bg-[#0D0D0D] text-white" : "bg-[#F4F4F5] text-[#18181B]"}`}>
       <div className="text-center">
         <h1 className="text-6xl font-bold mb-4">{message}</h1>
-        <p className="text-xl text-[#e9bcb6] mb-8">{details}</p>
+        <p className={`text-xl mb-8 ${isDark ? "text-[#e9bcb6]" : "text-[#52525B]"}`}>{details}</p>
         <a
           href="/"
-          className="inline-block bg-[#E50914] hover:bg-[#c0000c] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+          className="inline-block bg-[#E50914] hover:bg-[#c0000c] text-white font-semibold py-3 px-6 rounded-[2px] transition-colors"
         >
           Volver al inicio
         </a>
         {stack && import.meta.env.DEV && (
-          <pre className="mt-8 w-full p-4 overflow-x-auto bg-[#1f1f1f] rounded border border-[#353535]">
-            <code className="text-sm text-[#ff9999]">{stack}</code>
+          <pre className={`mt-8 w-full p-4 overflow-x-auto rounded border ${isDark ? "bg-[#1A1A1A] border-[#18181B] text-[#ff9999]" : "bg-[#FFFFFF] border-[#D4D4D8] text-red-600"}`}>
+            <code className="text-sm">{stack}</code>
           </pre>
         )}
       </div>

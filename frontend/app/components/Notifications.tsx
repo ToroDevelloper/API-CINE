@@ -1,4 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
+import type { useToastStore } from "../stores/useToastStore";
+
+type Toast = ReturnType<typeof useToastStore.getState>["toasts"][number];
 
 /**
  * Componentes de Alertas y Notificaciones Profesionales
@@ -109,7 +112,7 @@ export function Alert({
 }
 
 // ============================================================================
-// TOAST (Notificación temporal)
+// TOAST CONTAINER (Notificación temporal)
 // ============================================================================
 
 interface ToastProps {
@@ -119,29 +122,10 @@ interface ToastProps {
   duration?: number;
 }
 
-export function useToast() {
-  const [toasts, setToasts] = useState<(ToastProps & { id: string })[]>([]);
-
-  const addToast = (toast: ToastProps) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const duration = toast.duration || 4000;
-
-    setToasts((prev) => [...prev, { ...toast, id }]);
-
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, duration);
-
-    return id;
-  };
-
-  return { toasts, addToast };
-}
-
 export function ToastContainer({
   toasts,
 }: {
-  toasts: (ToastProps & { id: string })[];
+  toasts: Toast[];
 }) {
   return (
     <div className="fixed bottom-6 right-6 space-y-3 z-50">

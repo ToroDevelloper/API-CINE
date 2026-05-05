@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { getUsuarios } from '../services/usuarioService';
+import { getUsuarios, type Usuario } from '../services/usuarioService';
 import { Card } from './ui/Card';
 import { Alert } from './ui/Alert';
 import { Avatar } from './ui/Avatar';
 import { Tooltip } from './ui/Tooltip';
 
 const UsuariosList: React.FC = () => {
-    const [usuarios, setUsuarios] = useState([]);
+    const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [error, setError] = useState('');
 
     useEffect(() => {

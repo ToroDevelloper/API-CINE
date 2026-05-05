@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 import {
   cancelarReserva,
-  crearReserva,
   getAsientosDisponibles,
   getFuncionesPorPelicula,
   getMisReservas,
@@ -12,8 +11,11 @@ import {
   type Pelicula,
   type Reserva,
 } from "../../services/cineService";
+import { useCartStore, useCartTotals } from "../../stores/useCartStore";
+import { getSnacks, type Snack } from "../../services/snackService";
 import { LoadingSpinner } from "../../components/Notifications";
 import { useAppToast } from "../../components/ToastProvider";
+import { Armchair, Minus, Plus, ShoppingBag, Utensils } from "lucide-react";
 
 function formatFecha(fechaISO: string) {
   const d = new Date(fechaISO);
@@ -28,21 +30,33 @@ function formatFecha(fechaISO: string) {
 
 export default function Reservas() {
   const { addToast } = useAppToast();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [peliculas, setPeliculas] = useState<Pelicula[]>([]);
   const [funciones, setFunciones] = useState<Funcion[]>([]);
   const [asientos, setAsientos] = useState<AsientoDisponible[]>([]);
   const [reservas, setReservas] = useState<Reserva[]>([]);
+  const [snacks, setSnacks] = useState<Snack[]>([]);
+  const [showSnacks, setShowSnacks] = useState(false);
 
   const [peliculaId, setPeliculaId] = useState<string>(searchParams.get("peliculaId") || "");
   const [funcionId, setFuncionId] = useState<string>("");
-  const [asientosSeleccionados, setAsientosSeleccionados] = useState<Set<string>>(new Set());
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
+
+  const cartAsientos = useCartStore((s) => s.asientos);
+  const cartSnacks = useCartStore((s) => s.snacks);
+  const { total, itemCount } = useCartTotals();
+  const setFuncion = useCartStore((s) => s.setFuncion);
+  const toggleAsiento = useCartStore((s) => s.toggleAsiento);
+  const addAsiento = useCartStore((s) => s.addAsiento);
+  const removeAsiento = useCartStore((s) => s.removeAsiento);
+  const addSnack = useCartStore((s) => s.addSnack);
+  const updateSnackCantidad = useCartStore((s) => s.updateSnackCantidad);
+  const hasAsiento = useCartStore((s) => s.hasAsiento);
 
   useEffect(() => {
     let alive = true;
@@ -50,10 +64,15 @@ export default function Reservas() {
       setIsLoading(true);
       setError("");
       try {
-        const [pelis, mis] = await Promise.all([getPeliculas(), getMisReservas()]);
+        const [pelis, mis, snacksData] = await Promise.all([
+          getPeliculas(),
+          getMisReservas(),
+          getSnacks(),
+        ]);
         if (!alive) return;
         setPeliculas(pelis);
         setReservas(mis);
+        setSnacks(snacksData);
       } catch (e) {
         if (!alive) return;
         const msg = e instanceof Error ? e.message : "Error cargando datos";
@@ -64,13 +83,10 @@ export default function Reservas() {
         setIsLoading(false);
       }
     })();
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, []);
 
   useEffect(() => {
-    // mantener query param sincronizado (para deep-link desde Películas/Home)
     const current = searchParams.get("peliculaId") || "";
     if (peliculaId !== current) {
       const next = new URLSearchParams(searchParams);
@@ -78,7 +94,6 @@ export default function Reservas() {
       else next.delete("peliculaId");
       setSearchParams(next, { replace: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [peliculaId]);
 
   useEffect(() => {
@@ -87,7 +102,6 @@ export default function Reservas() {
       setFunciones([]);
       setFuncionId("");
       setAsientos([]);
-      setAsientosSeleccionados(new Set());
       setSuccess("");
       if (!peliculaId) return;
 
@@ -102,16 +116,13 @@ export default function Reservas() {
         try { addToast({ type: "error", title: msg }); } catch {}
       }
     })();
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, [peliculaId]);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       setAsientos([]);
-      setAsientosSeleccionados(new Set());
       setSuccess("");
       if (!funcionId) return;
 
@@ -126,72 +137,44 @@ export default function Reservas() {
         try { addToast({ type: "error", title: msg }); } catch {}
       }
     })();
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, [funcionId]);
 
-  const asientosPorFila = useMemo(() => {
-    const map = new Map<string, AsientoDisponible[]>();
-    for (const a of asientos) {
-      const fila = (a.fila || "").toUpperCase();
-      if (!map.has(fila)) map.set(fila, []);
-      map.get(fila)!.push(a);
-    }
-    for (const [, arr] of map) {
-      arr.sort((x, y) => x.numero - y.numero);
-    }
-    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [asientos]);
+  const selectedFuncion = funciones.find((f) => f._id === funcionId);
+  const selectedPelicula = peliculas.find((p) => p._id === peliculaId);
 
-  const toggleAsiento = (asientoId: string) => {
-    setAsientosSeleccionados((prev) => {
-      const next = new Set(prev);
-      if (next.has(asientoId)) next.delete(asientoId);
-      else next.add(asientoId);
-      return next;
-    });
+  const handleToggleAsiento = (a: AsientoDisponible) => {
+    if (!selectedFuncion) return;
+    toggleAsiento({ ...a, precio: selectedFuncion.precio_base });
   };
 
-  const handleCrearReserva = async () => {
-    setError("");
-    setSuccess("");
-
-    if (!funcionId) {
-      const msg = "Selecciona una función";
+  const handleIrACheckout = () => {
+    if (!funcionId || !selectedFuncion || !selectedPelicula) {
+      const msg = "Selecciona una función y al menos un asiento";
       setError(msg);
       try { addToast({ type: "warning", title: msg }); } catch {}
       return;
     }
-    if (asientosSeleccionados.size === 0) {
+    if (cartAsientos.length === 0) {
       const msg = "Selecciona al menos 1 asiento";
       setError(msg);
       try { addToast({ type: "warning", title: msg }); } catch {}
       return;
     }
 
-    setIsCreating(true);
-    try {
-      await crearReserva({
-        funcion_id: funcionId,
-        asientos_ids: Array.from(asientosSeleccionados),
-      });
+    const salaNombre = typeof selectedFuncion.sala_id === "string"
+      ? "Sala"
+      : selectedFuncion.sala_id.nombre;
 
-      const mis = await getMisReservas();
-      setReservas(mis);
-      const msg = "Reserva creada correctamente";
-      setSuccess(msg);
-      try { addToast({ type: "success", title: msg }); } catch {}
-      setFuncionId("");
-      setAsientos([]);
-      setAsientosSeleccionados(new Set());
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Error creando reserva";
-      setError(msg);
-      try { addToast({ type: "error", title: msg }); } catch {}
-    } finally {
-      setIsCreating(false);
-    }
+    setFuncion(funcionId, {
+      peliculaTitulo: selectedPelicula.titulo,
+      salaNombre,
+      fechaHora: selectedFuncion.fecha_hora,
+      precioBase: selectedFuncion.precio_base,
+      formato: selectedFuncion.formato,
+    });
+
+    navigate("/dashboard/reservas/checkout");
   };
 
   const handleCancelar = async (id: string) => {
@@ -215,7 +198,7 @@ export default function Reservas() {
     <div className="p-6 bg-bg-main min-h-full transition-colors duration-300 space-y-8">
       <div>
         <h1 className="text-3xl font-bold mb-2 text-text-main transition-colors">Reservas</h1>
-        <p className="text-text-dim transition-colors">Crea una reserva y gestiona tus entradas</p>
+        <p className="text-text-dim transition-colors">Selecciona película, función y asientos para tu reserva</p>
       </div>
 
       {(error || success) && (
@@ -232,7 +215,6 @@ export default function Reservas() {
         </div>
       )}
 
-      {/* Nueva reserva */}
       <section className="bg-bg-card border border-border-base rounded-lg p-6 space-y-5 transition-colors">
         <h2 className="text-xl font-bold text-text-main transition-colors">Nueva Reserva</h2>
 
@@ -287,12 +269,11 @@ export default function Reservas() {
               </div>
             </div>
 
-            {/* Asientos */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-text-main transition-colors">Asientos</h3>
                 <span className="text-xs text-text-dim transition-colors">
-                  Seleccionados: {asientosSeleccionados.size}
+                  Seleccionados: {cartAsientos.length}
                 </span>
               </div>
 
@@ -302,58 +283,159 @@ export default function Reservas() {
                 <p className="text-text-dim transition-colors">No hay asientos para esta función.</p>
               ) : (
                 <div className="space-y-3">
-                  {asientosPorFila.map(([fila, filaAsientos]) => (
-                    <div key={fila} className="flex items-center gap-3">
-                      <span className="w-6 text-sm font-bold text-text-dim transition-colors">{fila}</span>
-                      <div className="flex flex-wrap gap-2">
-                        {filaAsientos.map((a) => {
-                          const selected = asientosSeleccionados.has(a._id);
-                          const disabled = !a.disponible;
-                          return (
-                            <button
-                              key={a._id}
-                              type="button"
-                              disabled={disabled}
-                              onClick={() => toggleAsiento(a._id)}
-                              className={`w-10 h-10 rounded border text-xs font-semibold transition-all ${
-                                disabled
-                                  ? "bg-bg-side border-border-base text-text-dim/50 cursor-not-allowed opacity-60"
-                                  : selected
-                                  ? "bg-primary-red border-primary-red text-white"
-                                  : "bg-bg-side border-border-base text-text-main hover:border-primary-red"
-                              }`}
-                              title={`${fila}${a.numero} · ${a.tipo} ${disabled ? "(ocupado)" : ""}`}
-                            >
-                              {a.numero}
-                            </button>
-                          );
-                        })}
+                  {(() => {
+                    const byRow = new Map<string, AsientoDisponible[]>();
+                    for (const a of asientos) {
+                      const f = (a.fila || "").toUpperCase();
+                      if (!byRow.has(f)) byRow.set(f, []);
+                      byRow.get(f)!.push(a);
+                    }
+                    for (const [, arr] of byRow) arr.sort((x, y) => x.numero - y.numero);
+                    const rows = Array.from(byRow.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+
+                    return rows.map(([fila, filaAsientos]) => (
+                      <div key={fila} className="flex items-center gap-3">
+                        <span className="w-6 text-sm font-bold text-text-dim transition-colors">{fila}</span>
+                        <div className="flex flex-wrap gap-2">
+                          {filaAsientos.map((a) => {
+                            const selected = cartAsientos.some((ca) => ca._id === a._id);
+                            const disabled = !a.disponible;
+                            return (
+                              <button
+                                key={a._id}
+                                type="button"
+                                disabled={disabled}
+                                onClick={() => handleToggleAsiento(a)}
+                                className={`w-10 h-10 rounded border text-xs font-semibold transition-all ${
+                                  disabled
+                                    ? "bg-bg-side border-border-base text-text-dim/50 cursor-not-allowed opacity-60"
+                                    : selected
+                                    ? "bg-primary-red border-primary-red text-white"
+                                    : "bg-bg-side border-border-base text-text-main hover:border-primary-red"
+                                }`}
+                                title={`${fila}${a.numero} · ${a.tipo} ${disabled ? "(ocupado)" : ""}`}
+                              >
+                                {a.numero}
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
               )}
             </div>
 
-            <div className="flex justify-end">
+            <div className="border-t border-border-base pt-4">
               <button
-                type="button"
-                onClick={handleCrearReserva}
-                disabled={isCreating || !funcionId || asientosSeleccionados.size === 0}
-                className="px-5 py-3 bg-primary-red hover:bg-[#c0000c] disabled:bg-[#999999] text-white font-semibold rounded-lg transition-all disabled:cursor-not-allowed"
+                onClick={() => setShowSnacks(!showSnacks)}
+                className="flex items-center gap-2 text-text-main hover:text-primary-red transition-colors"
               >
-                {isCreating ? "Reservando..." : "Confirmar Reserva"}
+                <Utensils className="w-[18px] h-[18px]" />
+                <span className="text-sm font-medium">
+                  {showSnacks ? "Ocultar snacks" : "Agregar snacks a mi reserva"}
+                </span>
               </button>
+
+              {showSnacks && snacks.length > 0 && (
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {snacks.filter((s) => s.disponible).map((snack) => {
+                    const cartItem = cartSnacks.find((s) => s.snack._id === snack._id);
+                    return (
+                      <div
+                        key={snack._id}
+                        className="bg-bg-side border border-border-base rounded-sm p-3 space-y-2"
+                      >
+                        <div>
+                          <p className="text-sm font-bold text-text-main">{snack.nombre}</p>
+                          <p className="text-xs text-text-dim">${snack.precio.toFixed(2)}</p>
+                        </div>
+                        {cartItem ? (
+                          <div className="flex items-center justify-between">
+                            <button
+                              onClick={() => updateSnackCantidad(snack._id, cartItem.cantidad - 1)}
+                              className="w-8 h-8 rounded border border-border-base bg-bg-main flex items-center justify-center text-text-main hover:border-primary-red transition-colors"
+                            >
+                              <Minus className="w-[14px] h-[14px]" />
+                            </button>
+                            <span className="text-sm font-bold text-text-main">{cartItem.cantidad}</span>
+                            <button
+                              onClick={() => addSnack(snack)}
+                              className="w-8 h-8 rounded border border-border-base bg-bg-main flex items-center justify-center text-text-main hover:border-primary-red transition-colors"
+                            >
+                              <Plus className="w-[14px] h-[14px]" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => addSnack(snack)}
+                            className="w-full py-2 text-xs font-bold text-primary-red border border-primary-red/30 rounded-sm hover:bg-primary-red/10 transition-colors"
+                          >
+                            Agregar
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
+
+            {itemCount > 0 && (
+              <div className="border-t border-border-base pt-4 space-y-3">
+                <div className="flex items-center gap-2 text-text-main">
+                  <ShoppingBag className="w-[18px] h-[18px]" />
+                  <span className="text-sm font-bold">Tu Reserva ({itemCount} items)</span>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {cartAsientos.map((a) => (
+                    <span
+                      key={a._id}
+                      className="flex items-center gap-1 px-2 py-1 bg-bg-side border border-border-base rounded-sm text-xs"
+                    >
+                      <Armchair className="w-[12px] h-[12px] text-primary-red" />
+                      {a.fila}{a.numero}
+                      <span className="text-text-dim">· ${a.precio.toFixed(2)}</span>
+                    </span>
+                  ))}
+                  {cartSnacks.map((s) => (
+                    <span
+                      key={s.snack._id}
+                      className="flex items-center gap-1 px-2 py-1 bg-bg-side border border-border-base rounded-sm text-xs"
+                    >
+                      <Utensils className="w-[12px] h-[12px] text-primary-red" />
+                      {s.snack.nombre} x{s.cantidad}
+                      <span className="text-text-dim">· ${(s.snack.precio * s.cantidad).toFixed(2)}</span>
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-text-dim">
+                    Total:{" "}
+                    <span className="text-lg font-bold text-text-main">
+                      ${total.toFixed(2)}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleIrACheckout}
+                    disabled={cartAsientos.length === 0}
+                    className="px-5 py-3 bg-primary-red hover:bg-[#c0000c] disabled:bg-[#999999] text-white font-semibold rounded-lg transition-all disabled:cursor-not-allowed"
+                  >
+                    Ir a Confirmar
+                  </button>
+                </div>
+              </div>
+            )}
           </>
         )}
       </section>
 
-      {/* Mis reservas */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-text-main transition-colors">Mis Reservas</h2>
-        </div>
+        <h2 className="text-xl font-bold text-text-main transition-colors">Mis Reservas</h2>
 
         {isLoading ? (
           <p className="text-text-dim transition-colors">Cargando reservas...</p>

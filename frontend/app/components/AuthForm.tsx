@@ -7,7 +7,7 @@ import { Alert } from './ui/Alert';
 
 const AuthForm: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);
-    const [formData, setFormData] = useState({ email: '', password: '', name: '' });
+    const [formData, setFormData] = useState({ email: '', password: '', nombre: '', apellido: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -24,7 +24,7 @@ const AuthForm: React.FC = () => {
                 await login({ email: formData.email, password: formData.password });
                 alert('Login exitoso');
             } else {
-                await register({ name: formData.name, email: formData.email, password: formData.password });
+                await register({ nombre: formData.nombre, apellido: formData.apellido, email: formData.email, password: formData.password });
                 alert('Registro exitoso');
             }
         } catch (err: any) {
@@ -48,14 +48,24 @@ const AuthForm: React.FC = () => {
                     
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {!isLogin && (
-                            <Input
-                                type="text"
-                                name="name"
-                                label="Nombre"
-                                placeholder="Tu nombre"
-                                value={formData.name}
-                                onChange={handleChange}
-                            />
+                            <>
+                                <Input
+                                    type="text"
+                                    name="nombre"
+                                    label="Nombre"
+                                    placeholder="Tu nombre"
+                                    value={formData.nombre}
+                                    onChange={handleChange}
+                                />
+                                <Input
+                                    type="text"
+                                    name="apellido"
+                                    label="Apellido"
+                                    placeholder="Tu apellido"
+                                    value={formData.apellido}
+                                    onChange={handleChange}
+                                />
+                            </>
                         )}
                         <Input
                             type="email"

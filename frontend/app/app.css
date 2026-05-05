@@ -4,37 +4,58 @@
   --color-bg-main: var(--bg-main);
   --color-bg-side: var(--bg-side);
   --color-bg-card: var(--bg-card);
+  --color-bg-input: var(--bg-input);
+  --color-bg-input-border: var(--bg-input-border);
   --color-border-base: var(--border-base);
+  --color-border-card: var(--border-card);
+  --color-border-header: var(--border-header);
   --color-text-main: var(--text-main);
   --color-text-dim: var(--text-dim);
-  --color-primary-red: #E11D48;
+  --color-text-muted: var(--text-muted);
+  --color-text-heading: var(--text-heading);
+  --color-text-input-placeholder: var(--text-input-placeholder);
+  --color-primary-red: #E50914;
 }
 
 :root {
-  font-family: 'Inter', sans-serif;
-  
-  /* Dark Mode (Default) */
-  --bg-main: #131313;
+  font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+
+  /* Dark Mode (default) - Figma exact values */
+  --bg-main: #0D0D0D;
   --bg-side: #0A0A0A;
-  --bg-card: #0F0F0F;
+  --bg-card: #060606;
+  --bg-input: #200E0C;
+  --bg-input-border: #5E3F3B;
   --border-base: #18181B;
+  --border-card: #585858;
+  --border-header: #2E1A18;
   --text-main: #FFFFFF;
   --text-dim: #71717A;
+  --text-muted: #A1A1AA;
+  --text-heading: #F4F4F5;
+  --text-input-placeholder: rgba(233, 188, 182, 0.5);
+}
+
+[data-theme="light"] {
+  --bg-main: #F4F4F5;
+  --bg-side: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-input: #F9FAFB;
+  --bg-input-border: #D4D4D8;
+  --border-base: #E4E4E7;
+  --border-card: #D4D4D8;
+  --border-header: #E4E4E7;
+  --text-main: #18181B;
+  --text-dim: #52525B;
+  --text-muted: #71717A;
+  --text-heading: #0A0A0A;
+  --text-input-placeholder: #A1A1AA;
 }
 
 html {
   background-color: var(--bg-main);
   color: var(--text-main);
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-[data-theme="light"] {
-  --bg-main: #F4F4F5; /* Blanco no tan claro */
-  --bg-side: #E4E4E7;
-  --bg-card: #FFFFFF;
-  --border-base: #D4D4D8;
-  --text-main: #18181B;
-  --text-dim: #52525B;
 }
 
 body {
@@ -56,4 +77,17 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.2s ease-out;
 }

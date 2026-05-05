@@ -2,22 +2,38 @@ import { apiFetch } from "./apiClient";
 
 const API_URL = "/api/usuarios";
 
-export const getUsuarios = async () => {
-  const response = await apiFetch<any>(API_URL);
-  return response?.data ?? response;
+export type Usuario = {
+  _id: string;
+  nombre: string;
+  apellido?: string;
+  email: string;
+  rol: string;
+  activo: boolean;
+  telefono?: string;
+  fecha_registro?: string;
 };
 
-export const getUsuario = async (id: string) => {
-  const response = await apiFetch<any>(`${API_URL}/${id}`);
-  return response?.data ?? response;
+type ApiResponse<T> = {
+  success: boolean;
+  data: T;
+  message?: string;
 };
 
-export const updateUsuario = async (id: string, data: any) => {
-  const response = await apiFetch<any>(`${API_URL}/${id}`, { method: "PUT", json: data });
-  return response?.data ?? response;
+export const getUsuarios = async (): Promise<Usuario[]> => {
+  const response = await apiFetch<ApiResponse<Usuario[]>>(API_URL);
+  return response?.data ?? [];
 };
 
-export const deleteUsuario = async (id: string) => {
-  const response = await apiFetch<any>(`${API_URL}/${id}`, { method: "DELETE" });
-  return response?.data ?? response;
+export const getUsuario = async (id: string): Promise<Usuario> => {
+  const response = await apiFetch<ApiResponse<Usuario>>(`${API_URL}/${id}`);
+  return response?.data;
+};
+
+export const updateUsuario = async (id: string, data: Partial<Usuario>): Promise<Usuario> => {
+  const response = await apiFetch<ApiResponse<Usuario>>(`${API_URL}/${id}`, { method: "PUT", json: data });
+  return response?.data;
+};
+
+export const deleteUsuario = async (id: string): Promise<void> => {
+  await apiFetch<ApiResponse<unknown>>(`${API_URL}/${id}`, { method: "DELETE" });
 };

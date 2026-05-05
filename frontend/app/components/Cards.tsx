@@ -50,7 +50,7 @@ interface MovieCardProps {
   onClick?: () => void;
 }
 
-export function MovieCard({ id, title, image, rating, genre, onClick }: MovieCardProps) {
+export function MovieCard({ title, image, rating, genre, onClick }: Omit<MovieCardProps, "id">) {
   return (
     <div
       onClick={onClick}

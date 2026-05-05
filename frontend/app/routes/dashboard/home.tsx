@@ -1,29 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { Play, Plus, Clapperboard } from "lucide-react";
-import { useAuthStore } from "../../stores/useAuthStore";
-
-interface Pelicula {
-  _id: string;
-  titulo: string;
-  sinopsis: string;
-  duracion_min: number;
-  clasificacion: string;
-  poster_url?: string;
-  genero?: string[];
-}
+import { Plus, Clapperboard } from "lucide-react";
+import { getPeliculas, type Pelicula } from "../../services/cineService";
 
 export default function DashboardHome() {
   const navigate = useNavigate();
   const [peliculas, setPeliculas] = useState<Pelicula[]>([]);
   const [peliculaDestacada, setPeliculaDestacada] = useState<Pelicula | null>(null);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/peliculas")
-      .then(r => r.json())
-      .then(data => {
-        const pelis = data.data || [];
+    getPeliculas()
+      .then((data) => {
+        const pelis = data || [];
         setPeliculas(pelis);
         if (pelis.length > 0) setPeliculaDestacada(pelis[0]);
       })
