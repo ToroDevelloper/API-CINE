@@ -38,7 +38,7 @@ export default function DashboardLayout() {
         <Sidebar />
         
         {/* Contenido principal que cambia con las rutas */}
-        <main className="flex-1 ml-64 p-8 overflow-y-auto">
+        <main className="flex-1 ml-64 overflow-y-auto">
           <Outlet />
         </main>
       </div>

@@ -80,14 +80,14 @@ export default function Navbar() {
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#1f1f1f] border border-[#333] hover:border-[#E50914] transition-all"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-[#E50914] flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-8 h-8 rounded-lg bg-[#27272A] border border-[#3F3F46] flex items-center justify-center text-white font-bold text-sm">
                     {user?.nombre?.charAt(0).toUpperCase()}
                   </div>
                   <div className="hidden md:flex flex-col text-left">
                     <span className="text-sm font-semibold text-[#e2e2e2]">
                       {user?.nombre}
                     </span>
-                    <span className="text-xs text-[#e9bcb6]">Premium</span>
+                    <span className="text-[10px] text-[#52525B] font-bold uppercase tracking-tight">System Controller</span>
                   </div>
                   <span className="text-[#e9bcb6] text-xs">▼</span>
                 </button>
