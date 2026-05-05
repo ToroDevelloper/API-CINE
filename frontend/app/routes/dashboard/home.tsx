@@ -31,12 +31,12 @@ export default function DashboardHome() {
   }, []);
 
   return (
-    <div className="bg-[#131313] text-white min-h-screen">
+    <div className="bg-bg-main text-text-main min-h-screen transition-colors duration-300">
       {/* Netflix-style Hero Banner */}
       {peliculaDestacada && (
         <section className="relative h-[85vh] flex items-end overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#131313] via-[#131313]/70 to-transparent z-10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-[#131313]/20 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-bg-main via-bg-main/70 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-bg-main via-bg-main/20 to-transparent z-10" />
           
           {peliculaDestacada.poster_url && (
             <div 
@@ -49,20 +49,20 @@ export default function DashboardHome() {
             <h1 className="text-5xl md:text-7xl font-extrabold mb-4 tracking-tight leading-[1.1]">
               {peliculaDestacada.titulo}
             </h1>
-            <p className="text-lg md:text-xl text-[#e9bcb6] max-w-2xl mb-6 leading-relaxed">
+            <p className="text-lg md:text-xl text-text-dim max-w-2xl mb-6 leading-relaxed transition-colors">
               {peliculaDestacada.sinopsis}
             </p>
             <div className="flex gap-4">
               <Link
                 to={`/dashboard/reservas?peliculaId=${peliculaDestacada._id}`}
-                className="bg-white hover:bg-gray-200 text-black font-semibold py-3 px-8 rounded flex items-center gap-2 transition-colors text-lg"
+                className="bg-primary-red hover:bg-[#F43F5E] text-white font-semibold py-3 px-8 rounded flex items-center gap-2 transition-colors text-lg"
               >
                 <Plus className="w-5 h-5" />
                 Reservar
               </Link>
               <Link
                 to="/dashboard/reservas"
-                className="bg-[#ffffff33] hover:bg-[#ffffff4d] text-white font-semibold py-3 px-8 rounded transition-colors text-lg backdrop-blur-sm flex items-center gap-2"
+                className="bg-bg-card/50 hover:bg-bg-card text-text-main font-semibold py-3 px-8 rounded transition-colors text-lg backdrop-blur-sm flex items-center gap-2 border border-border-base"
               >
                 <Plus className="w-5 h-5" />
                 Mi Lista
@@ -71,7 +71,7 @@ export default function DashboardHome() {
           </div>
 
           {/* Gradient fade to next section */}
-          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#131313] to-transparent z-10" />
+          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-bg-main to-transparent z-10" />
         </section>
       )}
 
@@ -88,7 +88,7 @@ export default function DashboardHome() {
                   className="flex-none w-[200px] md:w-[240px] group cursor-pointer"
                   onClick={() => navigate(`/dashboard/reservas?peliculaId=${pelicula._id}`)}
                 >
-                  <div className="relative h-[300px] md:h-[360px] rounded-lg overflow-hidden bg-[#1f1f1f] shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(229,9,20,0.3)]">
+                  <div className="relative h-[300px] md:h-[360px] rounded-lg overflow-hidden bg-bg-card border border-border-base shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(225,29,72,0.3)]">
                     {pelicula.poster_url ? (
                       <img
                         src={pelicula.poster_url}
@@ -96,16 +96,16 @@ export default function DashboardHome() {
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1f1f1f] to-[#2a2a2a]">
-                        <Clapperboard className="w-16 h-16 text-[#666]" />
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-bg-side to-bg-card">
+                        <Clapperboard className="w-16 h-16 text-text-dim" />
                       </div>
                     )}
                     {/* Hover overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                       <div className="p-4 w-full">
-                        <h3 className="font-bold text-sm md:text-base mb-1">{pelicula.titulo}</h3>
+                        <h3 className="font-bold text-sm md:text-base mb-1 text-white">{pelicula.titulo}</h3>
                         <div className="flex items-center gap-2 text-xs text-gray-300">
-                          <span className="bg-[#E50914] px-1.5 py-0.5 rounded text-white text-[10px] font-semibold">
+                          <span className="bg-primary-red px-1.5 py-0.5 rounded text-white text-[10px] font-semibold">
                             {pelicula.clasificacion}
                           </span>
                           <span>{pelicula.duracion_min} min</span>
@@ -130,7 +130,7 @@ export default function DashboardHome() {
                   className="flex-none w-[160px] md:w-[200px] group cursor-pointer"
                   onClick={() => navigate(`/dashboard/reservas?peliculaId=${pelicula._id}`)}
                 >
-                  <div className="relative h-[240px] md:h-[300px] rounded-lg overflow-hidden bg-[#1f1f1f] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(229,9,20,0.2)]">
+                  <div className="relative h-[240px] md:h-[300px] rounded-lg overflow-hidden bg-bg-card border border-border-base transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(225,29,72,0.2)]">
                     {pelicula.poster_url ? (
                       <img
                         src={pelicula.poster_url}
@@ -138,13 +138,13 @@ export default function DashboardHome() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1f1f1f] to-[#2a2a2a]">
-                        <Clapperboard className="w-12 h-12 text-[#666]" />
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-bg-side to-bg-card">
+                        <Clapperboard className="w-12 h-12 text-text-dim" />
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                       <div className="p-3 w-full">
-                        <p className="font-semibold text-sm">{pelicula.titulo}</p>
+                        <p className="font-semibold text-sm text-white">{pelicula.titulo}</p>
                       </div>
                     </div>
                   </div>
@@ -157,8 +157,8 @@ export default function DashboardHome() {
         {/* Empty state */}
         {peliculas.length === 0 && (
           <div className="text-center py-16">
-            <Clapperboard className="w-16 h-16 text-[#666] mx-auto mb-4" />
-            <p className="text-[#999] text-lg">No hay películas disponibles en este momento.</p>
+            <Clapperboard className="w-16 h-16 text-text-dim mx-auto mb-4" />
+            <p className="text-text-dim text-lg">No hay películas disponibles en este momento.</p>
           </div>
         )}
       </div>

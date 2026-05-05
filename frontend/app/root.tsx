@@ -12,6 +12,7 @@ import { ToastProvider } from "./components/ToastProvider";
 
 import type { Route } from "./+types/root";
 import { useAuthStore } from "./stores/useAuthStore";
+import { useThemeStore } from "./stores/useThemeStore";
 import "./app.css";
 
 /**
@@ -36,8 +37,10 @@ export const links: Route.LinksFunction = () => [
  * La sesión se inicializa en `App` usando Zustand (sin Context API).
  */
 export function Layout({ children }: { children: React.ReactNode }) {
+  const theme = useThemeStore((s) => s.theme);
+
   return (
-    <html lang="es">
+    <html lang="es" data-theme={theme}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -45,7 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="bg-[#131313] text-white font-inter">
+      <body className="font-inter">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -96,8 +99,8 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       <div className="text-center">
         <h1 className="text-6xl font-bold mb-4">{message}</h1>
         <p className="text-xl text-[#e9bcb6] mb-8">{details}</p>
-        <a 
-          href="/" 
+        <a
+          href="/"
           className="inline-block bg-[#E50914] hover:bg-[#c0000c] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
         >
           Volver al inicio

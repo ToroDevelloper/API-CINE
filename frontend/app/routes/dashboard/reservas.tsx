@@ -212,15 +212,15 @@ export default function Reservas() {
   };
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="p-6 bg-bg-main min-h-full transition-colors duration-300 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Reservas</h1>
-        <p className="text-[#999]">Crea una reserva y gestiona tus entradas</p>
+        <h1 className="text-3xl font-bold mb-2 text-text-main transition-colors">Reservas</h1>
+        <p className="text-text-dim transition-colors">Crea una reserva y gestiona tus entradas</p>
       </div>
 
       {(error || success) && (
         <div
-          className={`p-4 rounded-lg border ${
+          className={`p-4 rounded-lg border transition-all ${
             error
               ? "bg-red-500/10 border-red-500"
               : "bg-green-500/10 border-green-500"
@@ -233,8 +233,8 @@ export default function Reservas() {
       )}
 
       {/* Nueva reserva */}
-      <section className="bg-[#1f1f1f] border border-[#333] rounded-lg p-6 space-y-5">
-        <h2 className="text-xl font-bold">Nueva Reserva</h2>
+      <section className="bg-bg-card border border-border-base rounded-lg p-6 space-y-5 transition-colors">
+        <h2 className="text-xl font-bold text-text-main transition-colors">Nueva Reserva</h2>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
@@ -244,13 +244,13 @@ export default function Reservas() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#e2e2e2] mb-2">
+                <label className="block text-sm font-medium text-text-main mb-2 transition-colors">
                   Película
                 </label>
                 <select
                   value={peliculaId}
                   onChange={(e) => setPeliculaId(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#141414] border border-[#333] rounded-sm text-white focus:outline-none focus:border-[#E50914]"
+                  className="w-full px-4 py-3 bg-bg-side border border-border-base rounded-sm text-text-main focus:outline-none focus:border-primary-red transition-colors"
                 >
                   <option value="">Selecciona una película</option>
                   {peliculas.map((p) => (
@@ -262,14 +262,14 @@ export default function Reservas() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#e2e2e2] mb-2">
+                <label className="block text-sm font-medium text-text-main mb-2 transition-colors">
                   Función
                 </label>
                 <select
                   value={funcionId}
                   onChange={(e) => setFuncionId(e.target.value)}
                   disabled={!peliculaId || funciones.length === 0}
-                  className="w-full px-4 py-3 bg-[#141414] border border-[#333] rounded-sm text-white focus:outline-none focus:border-[#E50914] disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-bg-side border border-border-base rounded-sm text-text-main focus:outline-none focus:border-primary-red disabled:opacity-50 transition-colors"
                 >
                   <option value="">
                     {peliculaId
@@ -290,21 +290,21 @@ export default function Reservas() {
             {/* Asientos */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">Asientos</h3>
-                <span className="text-xs text-[#999]">
+                <h3 className="text-lg font-bold text-text-main transition-colors">Asientos</h3>
+                <span className="text-xs text-text-dim transition-colors">
                   Seleccionados: {asientosSeleccionados.size}
                 </span>
               </div>
 
               {!funcionId ? (
-                <p className="text-[#999]">Selecciona una función para ver asientos.</p>
+                <p className="text-text-dim transition-colors">Selecciona una función para ver asientos.</p>
               ) : asientos.length === 0 ? (
-                <p className="text-[#999]">No hay asientos para esta función.</p>
+                <p className="text-text-dim transition-colors">No hay asientos para esta función.</p>
               ) : (
                 <div className="space-y-3">
                   {asientosPorFila.map(([fila, filaAsientos]) => (
                     <div key={fila} className="flex items-center gap-3">
-                      <span className="w-6 text-sm font-bold text-[#e9bcb6]">{fila}</span>
+                      <span className="w-6 text-sm font-bold text-text-dim transition-colors">{fila}</span>
                       <div className="flex flex-wrap gap-2">
                         {filaAsientos.map((a) => {
                           const selected = asientosSeleccionados.has(a._id);
@@ -317,10 +317,10 @@ export default function Reservas() {
                               onClick={() => toggleAsiento(a._id)}
                               className={`w-10 h-10 rounded border text-xs font-semibold transition-all ${
                                 disabled
-                                  ? "bg-[#141414] border-[#333] text-[#666] cursor-not-allowed opacity-60"
+                                  ? "bg-bg-side border-border-base text-text-dim/50 cursor-not-allowed opacity-60"
                                   : selected
-                                  ? "bg-[#E50914] border-[#E50914] text-white"
-                                  : "bg-[#1a1a1a] border-[#333] text-[#e2e2e2] hover:border-[#E50914]"
+                                  ? "bg-primary-red border-primary-red text-white"
+                                  : "bg-bg-side border-border-base text-text-main hover:border-primary-red"
                               }`}
                               title={`${fila}${a.numero} · ${a.tipo} ${disabled ? "(ocupado)" : ""}`}
                             >
@@ -340,7 +340,7 @@ export default function Reservas() {
                 type="button"
                 onClick={handleCrearReserva}
                 disabled={isCreating || !funcionId || asientosSeleccionados.size === 0}
-                className="px-5 py-3 bg-[#E50914] hover:bg-[#c0000c] disabled:bg-[#999999] text-white font-semibold rounded-lg transition-colors disabled:cursor-not-allowed"
+                className="px-5 py-3 bg-primary-red hover:bg-[#c0000c] disabled:bg-[#999999] text-white font-semibold rounded-lg transition-all disabled:cursor-not-allowed"
               >
                 {isCreating ? "Reservando..." : "Confirmar Reserva"}
               </button>
@@ -352,13 +352,13 @@ export default function Reservas() {
       {/* Mis reservas */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">Mis Reservas</h2>
+          <h2 className="text-xl font-bold text-text-main transition-colors">Mis Reservas</h2>
         </div>
 
         {isLoading ? (
-          <p className="text-[#999]">Cargando reservas...</p>
+          <p className="text-text-dim transition-colors">Cargando reservas...</p>
         ) : reservas.length === 0 ? (
-          <p className="text-[#999]">Aún no tienes reservas.</p>
+          <p className="text-text-dim transition-colors">Aún no tienes reservas.</p>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {reservas.map((r) => {
@@ -374,10 +374,10 @@ export default function Reservas() {
               return (
                 <div
                   key={r._id}
-                  className="bg-[#1f1f1f] border border-[#333] rounded-lg overflow-hidden"
+                  className="bg-bg-card border border-border-base rounded-lg overflow-hidden transition-colors"
                 >
                   <div className="flex gap-4 p-4">
-                    <div className="w-20 h-28 bg-[#141414] rounded overflow-hidden flex-shrink-0">
+                    <div className="w-20 h-28 bg-bg-side rounded overflow-hidden flex-shrink-0 transition-colors">
                       {poster ? (
                         <img src={poster} alt={titulo} className="w-full h-full object-cover" />
                       ) : null}
@@ -386,9 +386,9 @@ export default function Reservas() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <h3 className="font-bold text-white truncate">{titulo}</h3>
-                          <p className="text-sm text-[#e9bcb6]">{fecha}</p>
-                          {sala && <p className="text-xs text-[#999]">{sala}</p>}
+                          <h3 className="font-bold text-text-main truncate transition-colors">{titulo}</h3>
+                          <p className="text-sm text-text-dim transition-colors">{fecha}</p>
+                          {sala && <p className="text-xs text-text-dim/70 transition-colors">{sala}</p>}
                         </div>
                         <span
                           className={`text-xs px-2 py-1 rounded font-semibold ${
@@ -404,8 +404,8 @@ export default function Reservas() {
                       </div>
 
                       <div className="mt-3 flex items-center justify-between gap-3">
-                        <p className="text-xs text-[#999] truncate">Asientos: {seats || "-"}</p>
-                        <p className="text-sm font-bold text-white">${r.total}</p>
+                        <p className="text-xs text-text-dim transition-colors truncate">Asientos: {seats || "-"}</p>
+                        <p className="text-sm font-bold text-text-main transition-colors">${r.total}</p>
                       </div>
 
                       <div className="mt-4 flex justify-end">
@@ -413,7 +413,7 @@ export default function Reservas() {
                           type="button"
                           onClick={() => handleCancelar(r._id)}
                           disabled={r.estado === "cancelada"}
-                          className="px-4 py-2 bg-[#141414] border border-[#333] text-[#e9bcb6] hover:border-[#E50914] hover:text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-4 py-2 bg-bg-side border border-border-base text-text-dim hover:border-primary-red hover:text-text-main rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Cancelar
                         </button>

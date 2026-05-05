@@ -25,5 +25,6 @@ export default [
     route("/dashboard", "routes/dashboard/home.tsx"),
     route("/dashboard/peliculas", "routes/dashboard/peliculas.tsx"),
     route("/dashboard/reservas", "routes/dashboard/reservas.tsx"),
+    route("/dashboard/configuracion", "routes/dashboard/configuracion.tsx"),
   ]),
 ] satisfies RouteConfig;

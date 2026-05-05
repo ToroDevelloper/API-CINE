@@ -29,7 +29,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#131313] flex flex-col">
+    <div className="min-h-screen bg-bg-main flex flex-col transition-colors duration-300">
       {/* Navbar fijo en todas las páginas del dashboard */}
       <Navbar />
       
@@ -38,7 +38,7 @@ export default function DashboardLayout() {
         <Sidebar />
         
         {/* Contenido principal que cambia con las rutas */}
-        <main className="flex-1 ml-64 overflow-y-auto">
+        <main className="flex-1 ml-64 overflow-y-auto bg-bg-main transition-colors duration-300">
           <Outlet />
         </main>
       </div>
