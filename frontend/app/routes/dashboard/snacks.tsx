@@ -29,7 +29,7 @@ const categories = [
   { key: "otros", label: "Otros", icon: Package },
 ];
 
-const CATEGORY_ICON_MAP: Record<string, (props: { className?: string }) => JSX.Element> = {
+const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   todos: ChefHat,
   palomitas: ChefHat,
   bebidas: CupSoda,
@@ -155,15 +155,19 @@ function SnacksContent() {
                       src={snack.imagen_url}
                       alt={snack.nombre}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.parentElement?.querySelector('.img-fallback');
+                        if (fallback) fallback.classList.remove('hidden');
+                      }}
                     />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      {(() => {
-                        const FallbackIcon = CATEGORY_ICON_MAP[snack.categoria] || Utensils;
-                        return <FallbackIcon className="w-[48px] h-[48px] text-[#585858]" />;
-                      })()}
-                    </div>
-                  )}
+                  ) : null}
+                  <div className={`absolute inset-0 flex items-center justify-center ${snack.imagen_url ? 'img-fallback hidden' : ''}`}>
+                    {(() => {
+                      const FallbackIcon = CATEGORY_ICON_MAP[snack.categoria] || Utensils;
+                      return <FallbackIcon className="w-[48px] h-[48px] text-[#585858]" />;
+                    })()}
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-[#060606] via-transparent to-transparent" />
 
                   {/* Category Badge */}

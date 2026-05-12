@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Plus, Search, Edit2, Trash2, Calendar, Clock } from "lucide-react";
 import { getFunciones, createFuncion, updateFuncion, deleteFuncion, type Funcion } from "../../services/funcionService";
 import { getPeliculas, type Pelicula } from "../../services/cineService";
-import { getSalas, type Sala } from "../../services/salaService";
+import { getSalas, getSala, type Sala } from "../../services/salaService";
 import ProtectedRoute from "../../components/ProtectedRoute";
 
 export default function Funciones() {
@@ -22,13 +22,14 @@ function FuncionesContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingFuncion, setEditingFuncion] = useState<Funcion | null>(null);
+  const [dropdownSalas, setDropdownSalas] = useState<Sala[]>([]);
   const [formData, setFormData] = useState({
     pelicula_id: "",
     sala_id: "",
     fecha_hora: "",
     precio_base: 50,
-    idioma: "esp",
-    formato: "2d",
+    idioma: "español",
+    formato: "2D",
     activa: true,
   });
 
@@ -46,7 +47,9 @@ function FuncionesContent() {
         if (!alive) return;
         setFunciones(funcionesData);
         setPeliculas(peliculasData);
-        setSalas(salasData.filter(s => s.activa));
+        const activeSalas = salasData.filter(s => s.activa);
+        setSalas(activeSalas);
+        setDropdownSalas(activeSalas);
       } catch (e) {
         if (!alive) return;
         setError(e instanceof Error ? e.message : "Error cargando datos");
@@ -97,23 +100,35 @@ function FuncionesContent() {
     }
   };
 
-  const openModal = (funcion?: Funcion) => {
+  const openModal = async (funcion?: Funcion) => {
     if (funcion) {
       setEditingFuncion(funcion);
       const fechaLocal = new Date(funcion.fecha_hora);
       const fechaStr = fechaLocal.toISOString().slice(0, 16);
+      const salaId = typeof funcion.sala_id === 'object' ? funcion.sala_id?._id || '' : funcion.sala_id;
       setFormData({
         pelicula_id: typeof funcion.pelicula_id === 'object' ? funcion.pelicula_id?._id || '' : funcion.pelicula_id,
-        sala_id: typeof funcion.sala_id === 'object' ? funcion.sala_id?._id || '' : funcion.sala_id,
+        sala_id: salaId,
         fecha_hora: fechaStr,
         precio_base: funcion.precio_base,
         idioma: funcion.idioma,
         formato: funcion.formato,
         activa: funcion.activa,
       });
+      if (salaId && !salas.some(s => s._id === salaId)) {
+        try {
+          const sala = await getSala(salaId);
+          setDropdownSalas([...salas, sala]);
+        } catch {
+          setDropdownSalas(salas);
+        }
+      } else {
+        setDropdownSalas(salas);
+      }
     } else {
       setEditingFuncion(null);
-      setFormData({ pelicula_id: "", sala_id: "", fecha_hora: "", precio_base: 50, idioma: "esp", formato: "2d", activa: true });
+      setFormData({ pelicula_id: "", sala_id: "", fecha_hora: "", precio_base: 50, idioma: "español", formato: "2D", activa: true });
+      setDropdownSalas(salas);
     }
     setShowModal(true);
   };
@@ -288,8 +303,8 @@ function FuncionesContent() {
                     required
                   >
                     <option value="">Seleccionar...</option>
-                    {salas.map(s => (
-                      <option key={s._id} value={s._id}>{s.nombre}</option>
+                    {dropdownSalas.map(s => (
+                      <option key={s._id} value={s._id}>{s.nombre}{!s.activa ? " (inactiva)" : ""}</option>
                     ))}
                   </select>
                 </div>
@@ -326,9 +341,9 @@ function FuncionesContent() {
                     onChange={(e) => setFormData({ ...formData, idioma: e.target.value })}
                     className="w-full px-4 py-[12px] bg-[#200E0C] border border-[#5E3F3B] rounded-[2px] text-[16px] text-white focus:outline-none focus:border-[#AF8782] transition-colors"
                   >
-                    <option value="esp">Español</option>
-                    <option value="sub">Subtitulado</option>
-                    <option value="eng">Inglés</option>
+                    <option value="español">Español</option>
+                    <option value="subtitulada">Subtitulado</option>
+                    <option value="doblada">Doblada</option>
                   </select>
                 </div>
                 <div>
@@ -338,9 +353,10 @@ function FuncionesContent() {
                     onChange={(e) => setFormData({ ...formData, formato: e.target.value })}
                     className="w-full px-4 py-[12px] bg-[#200E0C] border border-[#5E3F3B] rounded-[2px] text-[16px] text-white focus:outline-none focus:border-[#AF8782] transition-colors"
                   >
-                    <option value="2d">2D</option>
-                    <option value="3d">3D</option>
-                    <option value="imax">IMAX</option>
+                    <option value="2D">2D</option>
+                    <option value="3D">3D</option>
+                    <option value="IMAX">IMAX</option>
+                    <option value="4DX">4DX</option>
                   </select>
                 </div>
               </div>

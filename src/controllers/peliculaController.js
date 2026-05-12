@@ -5,10 +5,10 @@ const Pelicula = require('../models/Pelicula');
 // @access  Public
 exports.getPeliculas = async (req, res, next) => {
     try {
-        const filtro = {};
+        const filtro = { activa: true };
         if (req.query.genero) filtro.generos = { $in: [req.query.genero] };
         if (req.query.clasificacion) filtro.clasificacion = req.query.clasificacion;
-        if (req.query.activa) filtro.activa = req.query.activa === 'true';
+        if (req.query.activa === 'false') filtro.activa = false;
         if (req.query.buscar) {
             filtro.$text = { $search: req.query.buscar };
         }

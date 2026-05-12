@@ -162,13 +162,19 @@ exports.getFuncionesPorPelicula = async (req, res, next) => {
             activa: true,
             fecha_hora: { $gte: hoy }
         })
-            .populate('sala_id', 'nombre tipo')
+            .populate({
+                path: 'sala_id',
+                match: { activa: true },
+                select: 'nombre tipo'
+            })
             .sort({ fecha_hora: 1 });
+
+        const funcionesFiltradas = funciones.filter(f => f.sala_id !== null);
 
         res.status(200).json({
             success: true,
-            count: funciones.length,
-            data: funciones
+            count: funcionesFiltradas.length,
+            data: funcionesFiltradas
         });
     } catch (error) {
         next(error);

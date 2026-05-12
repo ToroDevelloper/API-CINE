@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, Calendar } from "lucide-react";
-import { getPagos, type Pago } from "../../services/pagoService";
-import ProtectedRoute from "../../components/ProtectedRoute";
+import { Search, Calendar, Ticket, Utensils, CreditCard, Wallet, Building, Smartphone } from "lucide-react";
+import { getPagos, getMisPagos, type Pago } from "../../services/pagoService";
+import { useAuthStore } from "../../stores/useAuthStore";
 
 const ESTADOS_PAGO = ["pendiente", "completado", "fallido", "reembolsado"];
 
@@ -12,22 +12,104 @@ const ESTADO_COLORS: Record<string, string> = {
   reembolsado: "bg-[#27272A] text-[#999999] border-[#585858]",
 };
 
-const METODO_ICONS: Record<string, string> = {
-  tarjeta: "💳",
-  efectivo: "💵",
-  transferencia: "🏦",
-  qr: "📱",
+const METODO_ICONS: Record<string, React.ReactNode> = {
+  tarjeta: <CreditCard className="w-[16px] h-[16px]" />,
+  efectivo: <Wallet className="w-[16px] h-[16px]" />,
+  transferencia: <Building className="w-[16px] h-[16px]" />,
+  qr: <Smartphone className="w-[16px] h-[16px]" />,
 };
 
 export default function Pagos() {
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.rol === "admin";
+  return isAdmin ? <AdminPagos /> : <UserPagos />;
+}
+
+function UserPagos() {
+  const [pagos, setPagos] = useState<Pago[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const data = await getMisPagos();
+        if (!alive) return;
+        setPagos(data);
+      } catch { /* ignore */ } finally {
+        if (!alive) return;
+        setIsLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  const formatFecha = (fechaStr: string) => {
+    const fecha = new Date(fechaStr);
+    return fecha.toLocaleString('es-ES', {
+      day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
+  };
+
   return (
-    <ProtectedRoute requireAdmin>
-      <PagosContent />
-    </ProtectedRoute>
+    <div className="p-6 space-y-[48px]">
+      <div className="border-b border-[#2E1A18] pb-6">
+        <h1 className="text-[48px] font-extrabold text-white tracking-[-0.02em] leading-[1.1]">
+          Historial de Pagos
+        </h1>
+        <p className="text-[18px] text-[#B8B8B8] mt-2 leading-[1.6]">
+          Consulta tus compras y pagos realizados.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <p className="text-[#999999] text-[16px]">Cargando pagos...</p>
+      ) : pagos.length === 0 ? (
+        <p className="text-[#999999] text-[16px]">No tienes pagos registrados.</p>
+      ) : (
+        <div className="bg-[#060606] border border-[#585858] rounded-[4px] overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[#585858]">
+                <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">ID</th>
+                <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Monto</th>
+                <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Método</th>
+                <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Estado</th>
+                <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pagos.map((pago) => (
+                <tr key={pago._id} className="border-b border-[#2E1A18] hover:bg-[#0A0A0A] transition-colors">
+                  <td className="p-4 text-[14px] text-[#999999]">#{pago._id.slice(-6)}</td>
+                  <td className="p-4 text-[16px] font-bold text-white">${pago.monto.toFixed(2)}</td>
+                  <td className="p-4">
+                    <span className="inline-flex items-center gap-2 text-[14px] text-[#D4D4D4]">
+                      {METODO_ICONS[pago.metodo_pago] || <CreditCard className="w-[16px] h-[16px]" />} {pago.metodo_pago}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <span className={`px-[12px] py-[4px] rounded-[12px] text-[12px] font-bold tracking-[0.05em] border ${ESTADO_COLORS[pago.estado] || ESTADO_COLORS.pendiente}`}>
+                      {pago.estado.toUpperCase()}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-[14px] h-[14px] text-[#999999]" />
+                      <span className="text-[14px] text-[#D4D4D4]">{formatFecha(pago.fecha_pago)}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }
 
-function PagosContent() {
+function AdminPagos() {
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -59,16 +141,6 @@ function PagosContent() {
     return typeof pago.usuario_id === 'object' ? pago.usuario_id?.nombre || 'N/A' : 'N/A';
   };
 
-  const getPeliculaTitulo = (pago: Pago) => {
-    if (typeof pago.reserva_id === 'object' && pago.reserva_id?.funcion_id) {
-      const funcion = pago.reserva_id.funcion_id;
-      if (typeof funcion === 'object' && funcion.pelicula_id) {
-        return typeof funcion.pelicula_id === 'object' ? funcion.pelicula_id.titulo : 'N/A';
-      }
-    }
-    return null;
-  };
-
   const filteredPagos = useMemo(() => {
     let result = pagos;
     if (filtroEstado !== "todos") {
@@ -81,9 +153,7 @@ function PagosContent() {
       const term = searchTerm.toLowerCase();
       result = result.filter(p => {
         const usuario = getNombreUsuario(p);
-        return usuario.toLowerCase().includes(term) ||
-          p._id.toLowerCase().includes(term) ||
-          (getPeliculaTitulo(p) || "").toLowerCase().includes(term);
+        return usuario.toLowerCase().includes(term) || p._id.toLowerCase().includes(term);
       });
     }
     return result;
@@ -92,19 +162,15 @@ function PagosContent() {
   const formatFecha = (fechaStr: string) => {
     const fecha = new Date(fechaStr);
     return fecha.toLocaleString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+      day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
     });
   };
 
-  const totalMonto = useMemo(() => {
-    return filteredPagos
+  const totalIngresos = useMemo(() => {
+    return pagos
       .filter(p => p.estado === "completado")
       .reduce((sum, p) => sum + p.monto, 0);
-  }, [filteredPagos]);
+  }, [pagos]);
 
   return (
     <div className="p-6 space-y-[48px]">
@@ -117,9 +183,17 @@ function PagosContent() {
             Gestionar pagos, transacciones y reembolsos.
           </p>
         </div>
-        <div className="text-right">
+        <div className="text-right space-y-1">
           <p className="text-[14px] text-[#999999]">Total ingresos</p>
-          <p className="text-[32px] font-bold text-[#E50914]">${totalMonto.toFixed(2)}</p>
+          <p className="text-[32px] font-bold text-[#E50914]">${totalIngresos.toFixed(2)}</p>
+          <div className="flex gap-4 text-[12px] text-[#999999]">
+            <span className="flex items-center gap-1">
+              <Ticket className="w-[14px] h-[14px]" /> Boletos
+            </span>
+            <span className="flex items-center gap-1">
+              <Utensils className="w-[14px] h-[14px]" /> Snacks
+            </span>
+          </div>
         </div>
       </div>
 
@@ -134,7 +208,7 @@ function PagosContent() {
           <Search className="absolute left-[14px] top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#E9BCB6]" />
           <input
             type="text"
-            placeholder="Buscar por usuario, película o ID..."
+            placeholder="Buscar por usuario o ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-[44px] pr-4 py-[12px] bg-[#200E0C] border border-[#5E3F3B] rounded-[2px] text-[16px] text-white placeholder-[rgba(233,188,182,0.5)] focus:outline-none focus:border-[#AF8782] transition-colors"
@@ -199,7 +273,6 @@ function PagosContent() {
               <tr className="border-b border-[#585858]">
                 <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">ID</th>
                 <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Usuario</th>
-                <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Película</th>
                 <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Monto</th>
                 <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Método</th>
                 <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Estado</th>
@@ -211,13 +284,10 @@ function PagosContent() {
                 <tr key={pago._id} className="border-b border-[#2E1A18] hover:bg-[#0A0A0A] transition-colors">
                   <td className="p-4 text-[14px] text-[#999999]">#{pago._id.slice(-6)}</td>
                   <td className="p-4 text-[16px] text-white">{getNombreUsuario(pago)}</td>
-                  <td className="p-4 text-[14px] text-[#D4D4D4]">
-                    {getPeliculaTitulo(pago) || <span className="text-[#585858]">N/A</span>}
-                  </td>
                   <td className="p-4 text-[16px] font-bold text-white">${pago.monto.toFixed(2)}</td>
                   <td className="p-4">
                     <span className="inline-flex items-center gap-2 text-[14px] text-[#D4D4D4]">
-                      {METODO_ICONS[pago.metodo_pago] || "💳"} {pago.metodo_pago}
+                      {METODO_ICONS[pago.metodo_pago] || <CreditCard className="w-[16px] h-[16px]" />} {pago.metodo_pago}
                     </span>
                   </td>
                   <td className="p-4">

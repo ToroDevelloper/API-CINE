@@ -110,23 +110,14 @@ const funciones = (peliculas, salas) => {
         const salaIndex = i % salas.length;
         const precioBase = precios[salas[salaIndex].tipo] || 8;
 
-        const fechas = [
-            new Date('2026-05-06T14:00:00'),
-            new Date('2026-05-06T17:00:00'),
-            new Date('2026-05-06T20:00:00'),
-            new Date('2026-05-07T15:00:00'),
-            new Date('2026-05-07T18:00:00'),
-            new Date('2026-05-07T21:00:00'),
-            new Date('2026-05-08T14:00:00'),
-            new Date('2026-05-08T17:00:00'),
-            new Date('2026-05-08T20:00:00'),
-            new Date('2026-05-09T16:00:00'),
-            new Date('2026-05-09T19:00:00'),
-            new Date('2026-05-09T22:00:00'),
-            new Date('2026-05-10T13:00:00'),
-            new Date('2026-05-10T16:00:00'),
-            new Date('2026-05-10T20:00:00'),
-        ];
+        const hoy = new Date();
+        const horas = [14, 17, 20, 15, 18, 21, 14, 17, 20, 16, 19, 22, 13, 16, 20];
+        const fechas = horas.map((h, i) => {
+            const d = new Date(hoy);
+            d.setDate(d.getDate() + Math.floor(i / 3));
+            d.setHours(h, 0, 0, 0);
+            return d;
+        });
 
         const baseIdx = i * 3;
         const formato = salaTipoToFormato[salas[salaIndex].tipo] || '2D';

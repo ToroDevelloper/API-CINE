@@ -1,6 +1,5 @@
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useAuthStore } from "../stores/useAuthStore";
-import { useThemeStore } from "../stores/useThemeStore";
 import { useState, useEffect } from "react";
 import {
   Home,
@@ -14,10 +13,9 @@ import {
   ClipboardList,
   Wallet,
   Settings,
-  LogOut,
   Crown,
-  Sun,
-  Moon,
+  Shield,
+  FileText,
   Menu,
   X,
 } from "lucide-react";
@@ -32,10 +30,6 @@ type MenuItem = {
 export default function Sidebar() {
   const location = useLocation();
   const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
-  const toggleTheme = useThemeStore((s) => s.toggleTheme);
-  const theme = useThemeStore((s) => s.theme);
-  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isAdmin = user?.rol === "admin";
@@ -67,18 +61,12 @@ export default function Sidebar() {
     { path: "/dashboard/funciones", label: "Funciones", icon: Calendar, requiresAdmin: true },
     { path: "/dashboard/snacks", label: "Snacks", icon: Utensils },
     { path: "/dashboard/pedidos", label: "Pedidos de Snacks", icon: ClipboardList, requiresAdmin: true },
-    { path: "/dashboard/pagos", label: "Pagos", icon: Wallet, requiresAdmin: true },
+    { path: "/dashboard/pagos", label: isAdmin ? "Pagos" : "Historial", icon: Wallet },
   ];
 
   const menuItems = allMenuItems.filter(
     (item) => !item.requiresAdmin || isAdmin
   );
-
-  const handleLogout = () => {
-    void logout();
-    setMobileOpen(false);
-    navigate("/", { replace: true });
-  };
 
   const sidebarContent = (
     <>
@@ -125,51 +113,44 @@ export default function Sidebar() {
 
         <div className="mx-6 h-px bg-border-base my-2"></div>
 
-        <div className="px-3 pb-4 space-y-[4px]">
+        <Link to="/dashboard/configuracion" className="block">
           <div className="flex items-center gap-[12px] px-[10px] py-[8px] rounded-[2px] text-text-muted hover:text-text-main hover:bg-[#18181B]/50 cursor-pointer transition-all">
             <Settings className="w-[18px] h-[18px] text-text-dim" />
             <span className="text-[14px] font-medium">Configuración</span>
           </div>
-
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-[12px] px-[10px] py-[8px] rounded-[2px] text-text-muted hover:text-text-main hover:bg-[#18181B]/50 transition-all duration-200 cursor-pointer"
-          >
-            <LogOut className="w-[18px] h-[18px] text-text-dim" />
-            <span className="text-[14px] font-medium">Cerrar Sesión</span>
-          </button>
-        </div>
+        </Link>
       </div>
 
-      <div className="p-4 bg-bg-side border-t border-border-base">
-        {!isAdmin && (
-          <div className="p-4 bg-[rgba(24,24,27,0.5)] border border-[#27272A] rounded-[4px] space-y-3 mb-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-[8px]">
-                <div className="w-[18px] h-[18px] rounded-[2px] bg-[#27272A] flex items-center justify-center">
-                  <Crown className="w-[12px] h-[12px] text-[#E50914] fill-current" />
-                </div>
-                <span className="text-[10px] font-black tracking-[0.1em] uppercase text-text-heading">
-                  PREMIUM
-                </span>
-              </div>
-              <p className="text-[11px] text-text-muted leading-[1.4]">
-                Acceso a películas exclusivas y sin límites
-              </p>
-            </div>
-            <button className="w-full py-[8px] bg-[#E50914] hover:bg-[#c0000c] active:scale-[0.98] text-white text-[11px] font-bold rounded-[2px] transition-all">
-              Actualizar
+      <div className="p-4 bg-bg-side border-t border-border-base space-y-3">
+        <div className="p-3 bg-[rgba(229,9,20,0.05)] border border-[#27272A] rounded-[4px]">
+          <div className="flex items-center gap-[8px] mb-2">
+            <Shield className="w-[14px] h-[14px] text-[#E50914]" />
+            <span className="text-[10px] font-black tracking-[0.1em] uppercase text-text-heading">
+              Políticas
+            </span>
+          </div>
+          <div className="space-y-1.5">
+            <button className="w-full flex items-center gap-2 text-[11px] text-text-muted hover:text-text-main transition-colors">
+              <FileText className="w-[12px] h-[12px]" />
+              Términos y Condiciones
+            </button>
+            <button className="w-full flex items-center gap-2 text-[11px] text-text-muted hover:text-text-main transition-colors">
+              <FileText className="w-[12px] h-[12px]" />
+              Política de Privacidad
+            </button>
+            <button className="w-full flex items-center gap-2 text-[11px] text-text-muted hover:text-text-main transition-colors">
+              <FileText className="w-[12px] h-[12px]" />
+              Política de Devoluciones
             </button>
           </div>
-        )}
+        </div>
 
-        <button
-          onClick={toggleTheme}
-          className="w-full flex items-center gap-[12px] px-[10px] py-[8px] rounded-[2px] text-text-muted hover:text-text-main hover:bg-[#18181B]/50 transition-all cursor-pointer"
-        >
-          {theme === "dark" ? <Sun className="w-[18px] h-[18px] text-text-dim" /> : <Moon className="w-[18px] h-[18px] text-text-dim" />}
-          <span className="text-[14px] font-medium">{theme === "dark" ? "Modo Claro" : "Modo Oscuro"}</span>
-        </button>
+        <div className="relative h-[80px] rounded-[4px] overflow-hidden bg-gradient-to-r from-[rgba(229,9,20,0.15)] to-[rgba(229,9,20,0.05)] border border-[#27272A] flex items-center justify-center">
+          <div className="text-center">
+            <Crown className="w-[20px] h-[20px] text-[#E50914] mx-auto mb-1" />
+            <p className="text-[10px] font-bold text-text-dim">API-CINE v1.0</p>
+          </div>
+        </div>
       </div>
     </>
   );

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { apiFetch } from "../services/apiClient";
+import { useCartStore } from "./useCartStore";
 
 export type AuthUser = {
   _id: string;
@@ -68,6 +69,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch {
       // ignore
     } finally {
+      useCartStore.getState().clearCart();
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },

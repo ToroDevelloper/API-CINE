@@ -15,6 +15,7 @@ import {
   Plus,
   X,
   Trash2,
+  Utensils,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -32,7 +33,6 @@ export default function Navbar() {
   const removeAsiento = useCartStore((s) => s.removeAsiento);
   const updateSnackCantidad = useCartStore((s) => s.updateSnackCantidad);
   const removeSnack = useCartStore((s) => s.removeSnack);
-  const clearCart = useCartStore((s) => s.clearCart);
   const { total, itemCount } = useCartTotals();
 
   const handleLogout = () => {
@@ -59,21 +59,9 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Center - Navigation Links */}
+        {/* Center - Navigation Links (only visible on Landing) */}
         <div className="hidden md:flex items-center gap-8">
-          {isAuthenticated ? (
-            <>
-              <Link to="/dashboard" className="text-text-dim hover:text-text-main transition-colors text-sm font-medium">
-                Inicio
-              </Link>
-              <Link to="/dashboard/peliculas" className="text-text-dim hover:text-text-main transition-colors text-sm font-medium">
-                Películas
-              </Link>
-              <Link to="/dashboard/reservas" className="text-text-dim hover:text-text-main transition-colors text-sm font-medium">
-                Reservas
-              </Link>
-            </>
-          ) : (
+          {!isAuthenticated && (
             <Link to="/" className="text-text-dim hover:text-text-main transition-colors text-sm font-medium">
               Inicio
             </Link>
@@ -261,12 +249,19 @@ export default function Navbar() {
                               src={s.snack.imagen_url}
                               alt={s.snack.nombre}
                               className="w-10 h-10 object-cover rounded-sm flex-shrink-0"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                const parent = e.currentTarget.parentElement;
+                                if (parent) {
+                                  const fallback = parent.querySelector('.snack-img-fallback');
+                                  if (fallback) fallback.classList.remove('hidden');
+                                }
+                              }}
                             />
-                          ) : (
-                            <div className="w-10 h-10 bg-bg-side rounded-sm flex items-center justify-center flex-shrink-0">
-                              <Utensils className="w-[16px] h-[16px] text-[#585858]" />
-                            </div>
-                          )}
+                          ) : null}
+                          <div className={`w-10 h-10 bg-bg-side rounded-sm flex items-center justify-center flex-shrink-0 ${s.snack.imagen_url ? 'snack-img-fallback hidden' : ''}`}>
+                            <Utensils className="w-[16px] h-[16px] text-[#585858]" />
+                          </div>
                           <div className="flex-1 min-w-0">
                             <span className="text-[13px] font-medium text-text-heading truncate block">{s.snack.nombre}</span>
                             <span className="text-[11px] text-text-dim">${s.snack.precio.toFixed(2)} c/u</span>

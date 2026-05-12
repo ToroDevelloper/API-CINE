@@ -50,8 +50,7 @@ exports.registro = async (req, res, next) => {
                 apellido: usuario.apellido,
                 email: usuario.email,
                 rol: usuario.rol
-            },
-            token
+            }
         });
     } catch (error) {
         next(error);
@@ -117,8 +116,7 @@ exports.login = async (req, res, next) => {
                 apellido: usuario.apellido,
                 email: usuario.email,
                 rol: usuario.rol
-            },
-            token
+            }
         });
     } catch (error) {
         next(error);

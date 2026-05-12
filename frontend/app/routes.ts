@@ -10,6 +10,7 @@ export default [
   layout("routes/dashboard/layout.tsx", [
     route("/dashboard", "routes/dashboard/home.tsx"),
     route("/dashboard/peliculas", "routes/dashboard/peliculas.tsx"),
+    route("/dashboard/reservar", "routes/dashboard/reservar.tsx"),
     route("/dashboard/reservas", "routes/dashboard/reservas.tsx"),
     route("/dashboard/reservas/checkout", "routes/dashboard/order-details.tsx"),
     route("/dashboard/usuarios", "routes/dashboard/usuarios.tsx"),

@@ -70,6 +70,25 @@ body {
   border-color: var(--border-base);
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-side);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3F3F46;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #52525B;
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

@@ -5,9 +5,9 @@ const Sala = require('../models/Sala');
 // @access  Public
 exports.getSalas = async (req, res, next) => {
     try {
-        const filtro = {};
+        const filtro = { activa: true };
         if (req.query.tipo) filtro.tipo = req.query.tipo;
-        if (req.query.activa) filtro.activa = req.query.activa === 'true';
+        if (req.query.activa === 'false') filtro.activa = false;
 
         const salas = await Sala.find(filtro);
 

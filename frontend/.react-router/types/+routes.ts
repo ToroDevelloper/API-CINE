@@ -26,6 +26,9 @@ type Pages = {
   "/dashboard/peliculas": {
     params: {};
   };
+  "/dashboard/reservar": {
+    params: {};
+  };
   "/dashboard/reservas": {
     params: {};
   };
@@ -61,7 +64,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/login" | "/register" | "/dashboard" | "/dashboard/peliculas" | "/dashboard/reservas" | "/dashboard/reservas/checkout" | "/dashboard/usuarios" | "/dashboard/salas" | "/dashboard/asientos" | "/dashboard/funciones" | "/dashboard/snacks" | "/dashboard/pedidos" | "/dashboard/pagos" | "/dashboard/configuracion";
+    page: "/" | "/login" | "/register" | "/dashboard" | "/dashboard/peliculas" | "/dashboard/reservar" | "/dashboard/reservas" | "/dashboard/reservas/checkout" | "/dashboard/usuarios" | "/dashboard/salas" | "/dashboard/asientos" | "/dashboard/funciones" | "/dashboard/snacks" | "/dashboard/pedidos" | "/dashboard/pagos" | "/dashboard/configuracion";
   };
   "routes/layout.public.tsx": {
     id: "routes/layout.public";
@@ -81,7 +84,7 @@ type RouteFiles = {
   };
   "routes/dashboard/layout.tsx": {
     id: "routes/dashboard/layout";
-    page: "/dashboard" | "/dashboard/peliculas" | "/dashboard/reservas" | "/dashboard/reservas/checkout" | "/dashboard/usuarios" | "/dashboard/salas" | "/dashboard/asientos" | "/dashboard/funciones" | "/dashboard/snacks" | "/dashboard/pedidos" | "/dashboard/pagos" | "/dashboard/configuracion";
+    page: "/dashboard" | "/dashboard/peliculas" | "/dashboard/reservar" | "/dashboard/reservas" | "/dashboard/reservas/checkout" | "/dashboard/usuarios" | "/dashboard/salas" | "/dashboard/asientos" | "/dashboard/funciones" | "/dashboard/snacks" | "/dashboard/pedidos" | "/dashboard/pagos" | "/dashboard/configuracion";
   };
   "routes/dashboard/home.tsx": {
     id: "routes/dashboard/home";
@@ -90,6 +93,10 @@ type RouteFiles = {
   "routes/dashboard/peliculas.tsx": {
     id: "routes/dashboard/peliculas";
     page: "/dashboard/peliculas";
+  };
+  "routes/dashboard/reservar.tsx": {
+    id: "routes/dashboard/reservar";
+    page: "/dashboard/reservar";
   };
   "routes/dashboard/reservas.tsx": {
     id: "routes/dashboard/reservas";
@@ -142,6 +149,7 @@ type RouteModules = {
   "routes/dashboard/layout": typeof import("./app/routes/dashboard/layout.tsx");
   "routes/dashboard/home": typeof import("./app/routes/dashboard/home.tsx");
   "routes/dashboard/peliculas": typeof import("./app/routes/dashboard/peliculas.tsx");
+  "routes/dashboard/reservar": typeof import("./app/routes/dashboard/reservar.tsx");
   "routes/dashboard/reservas": typeof import("./app/routes/dashboard/reservas.tsx");
   "routes/dashboard/order-details": typeof import("./app/routes/dashboard/order-details.tsx");
   "routes/dashboard/usuarios": typeof import("./app/routes/dashboard/usuarios.tsx");
