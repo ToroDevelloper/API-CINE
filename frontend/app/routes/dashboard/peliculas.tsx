@@ -160,18 +160,18 @@ export default function Peliculas() {
       ) : !hasPeliculas ? (
         <p className="text-text-dim transition-colors">No hay películas disponibles.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {peliculas.map((p) => (
             <div
               key={p._id}
-              className="bg-bg-card border border-border-base rounded-lg overflow-hidden hover:border-primary-red transition-all duration-300"
+              className="group bg-bg-card border border-border-base rounded-xl overflow-hidden hover:border-primary-red hover:shadow-[0_8px_30px_rgba(255,0,0,0.15)] hover:-translate-y-2 transition-all duration-300"
             >
-              <div className="h-56 bg-bg-side transition-colors relative">
+              <div className="h-[450px] bg-bg-side transition-colors relative overflow-hidden">
                 {p.poster_url ? (
                   <img
                     src={p.poster_url}
                     alt={p.titulo}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-text-dim transition-colors">

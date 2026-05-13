@@ -103,104 +103,154 @@ function SalasContent() {
     }
   };
 
+  const totalSalas = salas.length;
+  const salasActivas = salas.filter(s => s.activa).length;
+  const salasVip = salas.filter(s => s.tipo === "vip").length;
+
   return (
-    <div className="p-6 space-y-[48px]">
+    <div className="p-6 space-y-8">
+      {/* Header */}
       <div className="flex items-start justify-between border-b border-[#2E1A18] pb-6">
         <div>
-          <h1 className="text-[48px] font-extrabold text-white tracking-[-0.02em] leading-[1.1]">
+          <h1 className="text-[36px] font-extrabold text-white tracking-[-0.02em] leading-[1.1]">
             Salas
           </h1>
-          <p className="text-[18px] text-[#B8B8B8] mt-2 leading-[1.6]">
+          <p className="text-[15px] text-[#B8B8B8] mt-1 leading-[1.6]">
             Gestionar salas de cine, capacidad y configuración de tipos.
           </p>
         </div>
         <button
           onClick={() => openModal()}
-          className="flex items-center gap-[12px] px-[24px] py-[12px] bg-[#E50914] hover:bg-[#c0000c] text-white rounded-[2px] transition-all shadow-[0_0_20px_rgba(229,9,20,0.2)]"
+          className="flex items-center gap-[10px] px-[20px] py-[10px] bg-[#E50914] hover:bg-[#c0000c] text-white rounded-lg transition-all shadow-[0_0_20px_rgba(229,9,20,0.2)]"
         >
           <Plus className="w-[16px] h-[16px]" />
-          <span className="text-[12px] font-bold uppercase tracking-[0.1em]">NEW ROOM</span>
+          <span className="text-[13px] font-bold uppercase tracking-[0.08em]">Nueva Sala</span>
         </button>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500 rounded-[2px]">
+        <div className="p-4 bg-red-500/10 border border-red-500 rounded-lg">
           <p className="text-red-400 text-[14px]">{error}</p>
         </div>
       )}
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="bg-bg-card border border-border-base rounded-xl p-5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg bg-blue-500/15 flex items-center justify-center text-blue-400 text-2xl font-bold">
+            🎬
+          </div>
+          <div>
+            <p className="text-[13px] text-text-dim uppercase tracking-wide font-semibold">Total Salas</p>
+            <p className="text-[32px] font-extrabold text-white leading-tight">{totalSalas}</p>
+          </div>
+        </div>
+        <div className="bg-bg-card border border-border-base rounded-xl p-5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg bg-green-500/15 flex items-center justify-center text-green-400 text-2xl font-bold">
+            ✅
+          </div>
+          <div>
+            <p className="text-[13px] text-text-dim uppercase tracking-wide font-semibold">Salas Activas</p>
+            <p className="text-[32px] font-extrabold text-green-400 leading-tight">{salasActivas}</p>
+          </div>
+        </div>
+        <div className="bg-bg-card border border-border-base rounded-xl p-5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg bg-purple-500/15 flex items-center justify-center text-purple-400 text-2xl font-bold">
+            ⭐
+          </div>
+          <div>
+            <p className="text-[13px] text-text-dim uppercase tracking-wide font-semibold">Salas VIP</p>
+            <p className="text-[32px] font-extrabold text-purple-400 leading-tight">{salasVip}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Search */}
       <div className="relative max-w-[400px]">
-        <Search className="absolute left-[14px] top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#E9BCB6]" />
+        <Search className="absolute left-[14px] top-1/2 -translate-y-1/2 w-[17px] h-[17px] text-[#E9BCB6]" />
         <input
           type="text"
           placeholder="Buscar por nombre o tipo..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-[44px] pr-4 py-[12px] bg-[#200E0C] border border-[#5E3F3B] rounded-[2px] text-[16px] text-white placeholder-[rgba(233,188,182,0.5)] focus:outline-none focus:border-[#AF8782] transition-colors"
+          className="w-full pl-[44px] pr-4 py-[10px] bg-bg-card border border-border-base rounded-lg text-[15px] text-white placeholder-text-dim focus:outline-none focus:border-primary-red transition-colors"
         />
       </div>
 
+      {/* Table */}
       {isLoading ? (
-        <p className="text-[#999999] text-[16px]">Cargando salas...</p>
+        <p className="text-text-dim text-[15px]">Cargando salas...</p>
       ) : filteredSalas.length === 0 ? (
-        <p className="text-[#999999] text-[16px]">No hay salas disponibles.</p>
+        <p className="text-text-dim text-[15px]">No hay salas disponibles.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[24px]">
-          {filteredSalas.map((sala) => (
-            <div
-              key={sala._id}
-              className={`bg-[#060606] border ${sala.activa ? "border-[#585858]" : "border-[#27272A] opacity-60"} rounded-[4px] overflow-hidden transition-all hover:border-[#E50914]`}
-            >
-              <div className="p-6 space-y-[16px]">
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-[24px] font-bold text-white leading-[1.3]">{sala.nombre}</h3>
-                  <button
-                    onClick={() => handleToggleActiva(sala)}
-                    className={`w-[36px] h-[36px] rounded-[12px] flex items-center justify-center transition-all ${
-                      sala.activa ? "bg-[#90120A] hover:bg-[#E50914]" : "bg-[#27272A] hover:bg-[#3F3F46]"
-                    }`}
-                  >
-                    <div className={`w-[12px] h-[12px] rounded-full ${sala.activa ? "bg-white" : "bg-[#585858]"}`} />
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-[12px] flex-wrap">
-                  <span className={`px-[12px] py-[4px] rounded-[12px] text-[12px] font-bold tracking-[0.05em] border ${getTipoColor(sala.tipo)}`}>
-                    {sala.tipo.toUpperCase()}
-                  </span>
-                  <span className={`px-[12px] py-[4px] rounded-[12px] text-[12px] font-bold tracking-[0.05em] ${
-                    sala.activa ? "bg-white text-[#0A0A0A]" : "bg-[#27272A] text-[#999999]"
-                  }`}>
-                    {sala.activa ? "ACTIVA" : "INACTIVA"}
-                  </span>
-                </div>
-
-                <p className="text-[16px] text-[#D4D4D4]">
-                  <span className="font-bold text-white">{sala.capacidad}</span> asientos
-                </p>
-
-                <div className="flex items-center justify-between pt-4 border-t border-[#999999]">
-                  <span className="text-[14px] text-[#999999]">
-                    ID: {sala._id.slice(-6)}
-                  </span>
-                  <div className="flex items-center gap-[8px]">
-                    <button
-                      onClick={() => openModal(sala)}
-                      className="w-[36px] h-[36px] rounded-[12px] bg-[#90120A] hover:bg-[#E50914] flex items-center justify-center transition-all"
-                    >
-                      <Edit2 className="w-[16px] h-[16px] text-white" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(sala._id)}
-                      className="w-[36px] h-[36px] rounded-[12px] bg-[#27272A] hover:bg-[#3F3F46] flex items-center justify-center transition-all"
-                    >
-                      <Trash2 className="w-[16px] h-[16px] text-[#A1A1AA]" />
-                    </button>
+        <div className="bg-bg-card border border-border-base rounded-xl overflow-hidden">
+          {/* Table Header */}
+          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 px-6 py-3 bg-bg-side border-b border-border-base">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-text-dim">Nombre</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-text-dim">Tipo</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-text-dim">Capacidad</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-text-dim">Estado</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-text-dim">Acciones</span>
+          </div>
+          {/* Table Rows */}
+          <div className="divide-y divide-border-base">
+            {filteredSalas.map((sala) => (
+              <div
+                key={sala._id}
+                className={`grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 px-6 py-4 items-center transition-colors hover:bg-bg-side ${!sala.activa ? "opacity-60" : ""}`}
+              >
+                {/* Nombre */}
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-primary-red/10 flex items-center justify-center text-primary-red font-bold text-sm">
+                    {sala.nombre.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-[15px]">{sala.nombre}</p>
+                    <p className="text-text-dim text-[12px]">ID: {sala._id.slice(-6)}</p>
                   </div>
                 </div>
+                {/* Tipo */}
+                <span className={`inline-flex px-3 py-1 rounded-full text-[11px] font-bold tracking-wide border ${getTipoColor(sala.tipo)}`}>
+                  {sala.tipo.toUpperCase()}
+                </span>
+                {/* Capacidad */}
+                <span className="text-white font-semibold text-[15px]">
+                  {sala.capacidad} <span className="text-text-dim font-normal text-[13px]">asientos</span>
+                </span>
+                {/* Estado */}
+                <button
+                  onClick={() => handleToggleActiva(sala)}
+                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide transition-all ${
+                    sala.activa
+                      ? "bg-green-500/15 text-green-400 border border-green-500/40 hover:bg-green-500/25"
+                      : "bg-zinc-700/40 text-zinc-400 border border-zinc-600/40 hover:bg-zinc-700/60"
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full ${sala.activa ? "bg-green-400" : "bg-zinc-400"}`} />
+                  {sala.activa ? "Activa" : "Inactiva"}
+                </button>
+                {/* Acciones */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => openModal(sala)}
+                    className="w-8 h-8 rounded-lg bg-primary-red/10 hover:bg-primary-red/20 flex items-center justify-center transition-all group"
+                  >
+                    <Edit2 className="w-4 h-4 text-primary-red group-hover:scale-110 transition-transform" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(sala._id)}
+                    className="w-8 h-8 rounded-lg bg-zinc-700/40 hover:bg-zinc-700/70 flex items-center justify-center transition-all group"
+                  >
+                    <Trash2 className="w-4 h-4 text-zinc-400 group-hover:text-white group-hover:scale-110 transition-all" />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          {/* Footer count */}
+          <div className="px-6 py-3 border-t border-border-base bg-bg-side">
+            <p className="text-text-dim text-[12px]">{filteredSalas.length} sala{filteredSalas.length !== 1 ? "s" : ""} encontrada{filteredSalas.length !== 1 ? "s" : ""}</p>
+          </div>
         </div>
       )}
 
