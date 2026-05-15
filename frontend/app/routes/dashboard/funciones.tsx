@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Search, Edit2, Trash2, Calendar, Clock } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, Calendar, Clock, Image as ImageIcon } from "lucide-react";
 import { getFunciones, createFuncion, updateFuncion, deleteFuncion, type Funcion } from "../../services/funcionService";
 import { getPeliculas, type Pelicula } from "../../services/cineService";
 import { getSalas, getSala, type Sala } from "../../services/salaService";
@@ -205,6 +205,7 @@ function FuncionesContent() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#585858]">
+                <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Carátula</th>
                 <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Película</th>
                 <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Sala</th>
                 <th className="text-left p-4 text-[12px] font-bold text-[#D4D4D4] tracking-[0.1em] uppercase">Fecha</th>
@@ -218,6 +219,19 @@ function FuncionesContent() {
             <tbody>
               {filteredFunciones.map((funcion) => (
                 <tr key={funcion._id} className="border-b border-[#2E1A18] hover:bg-[#0A0A0A] transition-colors">
+                  <td className="p-4">
+                    <div className="w-[50px] h-[75px] rounded-[4px] overflow-hidden bg-[#200E0C] border border-[#5E3F3B] flex items-center justify-center">
+                      {typeof funcion.pelicula_id === 'object' && funcion.pelicula_id?.poster_url ? (
+                        <img 
+                          src={funcion.pelicula_id.poster_url} 
+                          alt={funcion.pelicula_id.titulo}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <ImageIcon className="w-[24px] h-[24px] text-[#999999]" />
+                      )}
+                    </div>
+                  </td>
                   <td className="p-4 text-[16px] text-white font-medium">{getNombrePelicula(funcion)}</td>
                   <td className="p-4 text-[16px] text-[#D4D4D4]">{getNombreSala(funcion)}</td>
                   <td className="p-4">
@@ -243,7 +257,7 @@ function FuncionesContent() {
                       onClick={() => handleToggleActiva(funcion)}
                       className="flex items-center gap-2"
                     >
-                      <div className={`w-[12px] h-[12px] rounded-full ${funcion.activa ? "bg-[#E50914]" : "bg-[#585858]"}`} />
+                      <div className={`w-[12px] h-[12px] rounded-full ${funcion.activa ? "bg-[#22C55E]" : "bg-[#585858]"}`} />
                       <span className={`text-[12px] font-bold ${funcion.activa ? "text-white" : "text-[#999999]"}`}>
                         {funcion.activa ? "ACTIVA" : "INACTIVA"}
                       </span>

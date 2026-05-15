@@ -63,6 +63,18 @@ const peliculas = [
         fecha_estreno: new Date('2022-03-04'),
         poster_url: 'https://i.imgur.com/FENEQMQ.jpg',
         activa: true
+    },
+    {
+        titulo: 'Dragon ball Super: Broly',
+        sinopsis: 'Tras el Torneo de Poder, la Tierra vive en paz hasta que Goku y Vegeta enfrentan a Broly, un poderoso saiyan exiliado con un poder incontrolable. Freezer, buscando venganza, trae a Broly y a su padre Paragus a la Tierra, desencadenando una batalla épica que reescribe la historia y el origen de los saiyans.',
+        duracion_min: 100,
+        generos: ['Acción', 'Drama','Animado','Ciencia Ficción'],
+        idioma: 'Español latino',
+        clasificacion: 'PG-13',
+        fecha_estreno: new Date('2022-05-14'),
+        poster_url: 'https://static.wikia.nocookie.net/dragonball/images/f/fb/Dragon_Ball_Super_Broly_poster.png/revision/latest?cb=20180709221734&path-prefix=es',
+        activa: true
+
     }
 ];
 
@@ -111,7 +123,7 @@ const funciones = (peliculas, salas) => {
         const precioBase = precios[salas[salaIndex].tipo] || 8;
 
         const hoy = new Date();
-        const horas = [14, 17, 20, 15, 18, 21, 14, 17, 20, 16, 19, 22, 13, 16, 20];
+        const horas = [14, 17, 20, 15, 18, 21, 14, 17, 20, 16, 19, 22, 13, 16, 20, 14, 18, 21];
         const fechas = horas.map((h, i) => {
             const d = new Date(hoy);
             d.setDate(d.getDate() + Math.floor(i / 3));
@@ -144,7 +156,7 @@ const snacks = [
         descripcion: 'Palomitas de maíz grandes con mantequilla',
         precio: 6.50,
         categoria: 'palomitas',
-        imagen_url: 'https://images.unsplash.com/photo-1578849278619-e7350587773b?w=300',
+        imagen_url: 'https://static.vecteezy.com/system/resources/previews/069/647/390/non_2x/a-large-striped-popcorn-bucket-overflowing-with-fresh-popcorn-on-a-colorful-blurred-background-photo.jpg',
         disponible: true
     },
     {
@@ -152,7 +164,7 @@ const snacks = [
         descripcion: 'Palomitas de maíz medianas con mantequilla',
         precio: 4.50,
         categoria: 'palomitas',
-        imagen_url: 'https://images.unsplash.com/photo-1578849278619-e7350587773b?w=300',
+        imagen_url: 'https://foodhero.org/sites/foodhero-prod/files/recipe-imgs/Stovetop%20Popcorn_Sp_v_WM.png',
         disponible: true
     },
     {
@@ -160,7 +172,7 @@ const snacks = [
         descripcion: 'Palomitas dulces con caramelo',
         precio: 7.00,
         categoria: 'palomitas',
-        imagen_url: 'https://images.unsplash.com/photo-1578849278619-e7350587773b?w=300',
+        imagen_url: 'https://img-global.cpcdn.com/recipes/55d304653be7fa2d/1200x630cq80/photo.jpg',
         disponible: true
     },
     {
@@ -176,7 +188,7 @@ const snacks = [
         descripcion: 'Agua mineral sin gas 500ml',
         precio: 2.00,
         categoria: 'bebidas',
-        imagen_url: 'https://images.unsplash.com/photo-1548839140-22a620576594?w=300',
+        imagen_url: 'https://hatsu.co/wp-content/uploads/2026/04/Banners-Web-HATSU-03.jpg',
         disponible: true
     },
     {
@@ -184,7 +196,7 @@ const snacks = [
         descripcion: 'Cerveza artesanal local 355ml',
         precio: 5.00,
         categoria: 'bebidas',
-        imagen_url: 'https://images.unsplash.com/photo-1535958636474-bf280e1dc5d8?w=300',
+        imagen_url: 'https://www.revistacompensar.com/wp-content/uploads/2021/08/cerveza-artesanal.jpg',
         disponible: true
     },
     {
@@ -192,7 +204,7 @@ const snacks = [
         descripcion: 'Nachos crujientes con salsa de queso',
         precio: 5.50,
         categoria: 'nachos',
-        imagen_url: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=300',
+        imagen_url: 'https://i.pinimg.com/736x/10/b7/07/10b7076561649cf63c0b4c7f281760db.jpg',
         disponible: true
     },
     {
@@ -200,7 +212,7 @@ const snacks = [
         descripcion: 'Hot dog clásico con mostaza y ketchup',
         precio: 4.00,
         categoria: 'otros',
-        imagen_url: 'https://images.unsplash.com/photo-1612392062126-2f8b0e0e0e0e?w=300',
+        imagen_url: 'https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480/img/recipe/ras/Assets/21861ad1f03b6136a02bf810234cd666/Derivates/d257bb4fe192628f00a98b1f08a7976fbf7f21d4.jpg',
         disponible: true
     },
     {
@@ -208,7 +220,7 @@ const snacks = [
         descripcion: 'Barra de chocolate con leche',
         precio: 2.50,
         categoria: 'dulces',
-        imagen_url: 'https://images.unsplash.com/photo-1549007994-cb196b8f247?w=300',
+        imagen_url: 'https://royceindia.com/cdn/shop/files/ChocolateBarBlack_1.webp?v=1705398052&width=1080',
         disponible: true
     },
     {
@@ -216,7 +228,7 @@ const snacks = [
         descripcion: '2 Palomitas grandes + 2 Bebidas + 1 Chocolate',
         precio: 18.00,
         categoria: 'combos',
-        imagen_url: 'https://images.unsplash.com/photo-1578849278619-e7350587773b?w=300',
+        imagen_url: 'https://static.promodescuentos.com/threads/raw/Y2zwx/849354_1/re/768x768/qt/60/849354_1.jpg',
         disponible: true
     },
     {
@@ -224,7 +236,7 @@ const snacks = [
         descripcion: '4 Palomitas grandes + 4 Bebidas + 2 Chocolates',
         precio: 32.00,
         categoria: 'combos',
-        imagen_url: 'https://images.unsplash.com/photo-1578849278619-e7350587773b?w=300',
+        imagen_url: 'https://cdn.inoutdelivery.com/cinecolombia.inoutdelivery.com/sm/1709247865188-6.Mega-Combo.png',
         disponible: true
     },
     {
@@ -232,7 +244,7 @@ const snacks = [
         descripcion: 'Bolsa de M&Ms de chocolate',
         precio: 2.00,
         categoria: 'dulces',
-        imagen_url: 'https://images.unsplash.com/photo-1582048726184-680897573789?w=300',
+        imagen_url: 'https://pbs.twimg.com/media/FKq1-TBXsAMch9J.jpg',
         disponible: true
     }
 ];
