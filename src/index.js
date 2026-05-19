@@ -13,19 +13,28 @@ const { errorHandler, notFound } = require('./middlewares');
 // Crear app
 const app = express();
 
-// Conectar a la base de datos
-connectDB();
-
 // Middlewares
+const defaultOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
+const allowedOrigins = (process.env.CORS_ORIGIN || defaultOrigins.join(','))
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean);
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
-  credentials: true
+    origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`Origen no permitido por CORS: ${origin}`));
+    },
+    credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Documentación Swagger
+// Documentacion Swagger
 const swaggerDocument = YAML.load(path.join(__dirname, '../swagger-spec.yml'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
@@ -44,6 +53,15 @@ app.get('/', (req, res) => {
     });
 });
 
+// Health check para Render
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        success: true,
+        status: 'ok',
+        uptime: process.uptime()
+    });
+});
+
 // Montar rutas
 app.use('/api', routes);
 
@@ -54,14 +72,23 @@ app.use(errorHandler);
 // Puerto
 const PORT = process.env.PORT || 3000;
 
-// Iniciar servidor
-if (process.env.NODE_ENV !== 'test') {
-    app.listen(PORT, () => {
+const startServer = async () => {
+    await connectDB();
+
+    return app.listen(PORT, () => {
         console.log(`Servidor corriendo en puerto ${PORT}`);
         console.log(`http://localhost:${PORT}`);
         console.log(`API: http://localhost:${PORT}/api`);
-        console.log(`Documentación: http://localhost:${PORT}/api-docs`);
+        console.log(`Documentacion: http://localhost:${PORT}/api-docs`);
+    });
+};
+
+// Iniciar servidor fuera de pruebas
+if (process.env.NODE_ENV !== 'test') {
+    startServer().catch(() => {
+        process.exit(1);
     });
 }
 
 module.exports = app;
+module.exports.startServer = startServer;

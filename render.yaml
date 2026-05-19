@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: api-cine-backend
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: corepack enable && pnpm install --frozen-lockfile
+    startCommand: pnpm start
+    autoDeployTrigger: checksPass
+    healthCheckPath: /health
+    buildFilter:
+      paths:
+        - package.json
+        - pnpm-lock.yaml
+        - render.yaml
+        - swagger-spec.yml
+        - src/**
+        - tests/**
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: CORS_ORIGIN
+        sync: false
