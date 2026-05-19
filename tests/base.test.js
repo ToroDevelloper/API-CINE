@@ -3,7 +3,7 @@ const app = require('../src/index');
 
 describe('API Routes', () => {
     describe('GET /', () => {
-        it('debería retornar el mensaje de bienvenida y estado 200', async () => {
+        it('deberia retornar el mensaje de bienvenida y estado 200', async () => {
             const res = await request(app).get('/');
             expect(res.statusCode).toBe(200);
             expect(res.body.success).toBe(true);
@@ -11,8 +11,17 @@ describe('API Routes', () => {
         });
     });
 
+    describe('GET /health', () => {
+        it('deberia retornar estado saludable para Render', async () => {
+            const res = await request(app).get('/health');
+            expect(res.statusCode).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.status).toBe('ok');
+        });
+    });
+
     describe('GET /api', () => {
-        it('debería retornar 404 para una ruta de API inexistente', async () => {
+        it('deberia retornar 404 para una ruta de API inexistente', async () => {
             const res = await request(app).get('/api/ruta-que-no-existe');
             expect(res.statusCode).toBe(404);
         });

@@ -1,0 +1,7 @@
+packages:
+  - frontend
+
+allowBuilds:
+  '@scarf/scarf': true
+  esbuild: true
+  unrs-resolver: true

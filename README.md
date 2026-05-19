@@ -80,7 +80,7 @@ El sistema gestiona **9 entidades** relacionadas mediante ObjectId:
 
 ```bash
 cd API-CINE
-npm install
+pnpm install
 ```
 
 ### 2. Iniciar MongoDB con Docker
@@ -104,10 +104,10 @@ JWT_EXPIRES_IN=24h
 
 ```bash
 # Desarrollo (con nodemon)
-npm run dev
+pnpm run dev
 
 # Producción
-npm start
+pnpm start
 ```
 
 ## 📡 Endpoints de la API
@@ -259,3 +259,4 @@ docker-compose down
 # Detener y eliminar volúmenes
 docker-compose down -v
 ```
+
