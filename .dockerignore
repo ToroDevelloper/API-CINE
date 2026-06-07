@@ -1,0 +1,11 @@
+node_modules
+frontend/node_modules
+build
+frontend/build
+dist
+coverage
+.git
+.github
+.env
+*.log
+docs
