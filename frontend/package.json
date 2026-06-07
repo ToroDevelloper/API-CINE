@@ -6,7 +6,8 @@
   "packageManager": "pnpm@11.1.2",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "react-router build",
+    "start": "node server.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

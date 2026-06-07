@@ -1,8 +1,47 @@
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api_cine_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://mongodb:27017/api_cine
+      CORS_ORIGIN: http://localhost:5173,http://127.0.0.1:5173
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - cine_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_URL: http://localhost:3000
+    container_name: api_cine_frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5173
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - cine_network
+
   mongodb:
     image: mongo:7.0
     container_name: mongodb_cine
-    restart: always
+    restart: unless-stopped
     ports:
       - "27017:27017"
     environment:
@@ -10,6 +49,12 @@ services:
     volumes:
       - mongodb_data:/data/db
       - mongodb_config:/data/configdb
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     networks:
       - cine_network
 
