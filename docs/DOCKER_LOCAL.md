@@ -12,8 +12,8 @@ docker compose up --build -d
 
 ```bash
 docker compose ps
-curl http://localhost:3000/health
-curl -I http://localhost:5173/
+curl http://localhost:3001/health
+curl -I http://localhost:3000/
 ```
 
 ## Verificar usuario seguro no-root
