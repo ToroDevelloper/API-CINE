@@ -1,5 +1,7 @@
 FROM node:24-alpine AS deps
 
+ENV PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN=false
+ENV npm_config_verify_deps_before_run=false
 WORKDIR /app
 RUN corepack enable
 
@@ -9,6 +11,8 @@ RUN pnpm --filter api-cine-frontend install --frozen-lockfile
 
 FROM node:24-alpine AS prod-deps
 
+ENV PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN=false
+ENV npm_config_verify_deps_before_run=false
 WORKDIR /app
 RUN corepack enable
 
@@ -18,6 +22,8 @@ RUN pnpm --filter api-cine-frontend install --prod --frozen-lockfile
 
 FROM node:24-alpine AS builder
 
+ENV PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN=false
+ENV npm_config_verify_deps_before_run=false
 WORKDIR /app
 RUN corepack enable
 
@@ -28,12 +34,14 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/frontend/node_modules ./frontend/node_modules
 COPY frontend ./frontend
 WORKDIR /app/frontend
-RUN pnpm run build
+RUN ./node_modules/.bin/react-router build
 
 FROM node:24-alpine AS runner
 
 ENV NODE_ENV=production
 ENV PORT=5173
+ENV PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN=false
+ENV npm_config_verify_deps_before_run=false
 WORKDIR /app
 RUN corepack enable
 
