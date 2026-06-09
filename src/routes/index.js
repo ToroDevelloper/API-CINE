@@ -12,6 +12,8 @@ const reservaRoutes = require('./reservaRoutes');
 const snackRoutes = require('./snackRoutes');
 const pedidoSnackRoutes = require('./pedidoSnackRoutes');
 const pagoRoutes = require('./pagoRoutes');
+const taskRoutes = require('./taskRoutes');
+const commentRoutes = require('./commentRoutes');
 
 // Montar rutas
 router.use('/auth', authRoutes);
@@ -24,6 +26,8 @@ router.use('/reservas', reservaRoutes);
 router.use('/snacks', snackRoutes);
 router.use('/pedidos-snacks', pedidoSnackRoutes);
 router.use('/pagos', pagoRoutes);
+router.use('/tasks', taskRoutes);
+router.use('/comments', commentRoutes);
 
 // Ruta de health check
 router.get('/health', (req, res) => {
