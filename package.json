@@ -49,8 +49,10 @@
         "supertest": "^7.2.2"
     },
     "pnpm": {
-        "approvedBuilds": {
-            "mongodb-memory-server": "11.2.0"
-        }
+        "onlyBuiltDependencies": [
+            "mongodb-memory-server",
+            "@swc/core",
+            "esbuild"
+        ]
     }
 }

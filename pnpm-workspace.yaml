@@ -3,7 +3,7 @@ packages:
 
 allowBuilds:
   '@scarf/scarf': true
-  '@swc/core': set this to true or false
+  '@swc/core': true
   esbuild: true
   mongodb-memory-server: true
   unrs-resolver: true
