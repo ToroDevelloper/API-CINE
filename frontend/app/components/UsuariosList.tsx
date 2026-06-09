@@ -14,8 +14,9 @@ const UsuariosList: React.FC = () => {
             try {
                 const data = await getUsuarios();
                 setUsuarios(data);
-            } catch (err: any) {
-                setError(err.response?.data?.message || 'Error al cargar los usuarios');
+            } catch (err: unknown) {
+                const axiosError = err as { response?: { data?: { message?: string } } };
+                setError(axiosError.response?.data?.message || 'Error al cargar los usuarios');
             }
         };
         fetchUsuarios();
@@ -32,15 +33,15 @@ const UsuariosList: React.FC = () => {
             )}
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {usuarios.map((usuario: any) => (
-                    <Card key={usuario.id} hover className="flex items-center gap-4">
-                        <Tooltip content={`Usuario ID: ${usuario.id}`}>
+                {usuarios.map((usuario) => (
+                    <Card key={usuario._id} hover className="flex items-center gap-4">
+                        <Tooltip content={`Usuario ID: ${usuario._id}`}>
                             <div>
-                                <Avatar fallback={usuario.name || 'U'} size="lg" />
+                                <Avatar fallback={usuario.nombre.charAt(0).toUpperCase() || 'U'} size="lg" />
                             </div>
                         </Tooltip>
                         <div>
-                            <h3 className="text-lg font-bold text-white">{usuario.name}</h3>
+                            <h3 className="text-lg font-bold text-white">{usuario.nombre}</h3>
                             <p className="text-sm text-gray-400">{usuario.email}</p>
                         </div>
                     </Card>

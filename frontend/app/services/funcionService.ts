@@ -4,7 +4,7 @@ const API_URL = "/api/funciones";
 
 export type Funcion = {
   _id: string;
-  pelicula_id: { _id: string; titulo: string } | string;
+  pelicula_id: { _id: string; titulo: string; poster_url?: string } | string;
   sala_id: { _id: string; nombre: string } | string;
   fecha_hora: string;
   precio_base: number;

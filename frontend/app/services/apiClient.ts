@@ -10,7 +10,7 @@ export type ApiErrorPayload = {
 type ApiFetchOptions = Omit<RequestInit, "body" | "headers"> & {
   headers?: Record<string, string>;
   json?: unknown;
-  body?: any;
+  body?: BodyInit | null;
   params?: Record<string, unknown>;
 };
 
@@ -34,10 +34,11 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   try {
     const response = await axiosInstance.request<T>(config);
     return response.data;
-  } catch (error: any) {
-    const payload = error?.response?.data as ApiErrorPayload | undefined;
-    const message = payload?.message ?? error?.message ?? "Error de red";
-    throw new Error(message);
+  } catch (error: unknown) {
+    const axiosError = error as { response?: { data?: ApiErrorPayload }; message?: string };
+    const payload = axiosError?.response?.data;
+    const message = payload?.message ?? axiosError?.message ?? "Error de red";
+    throw new Error(message, { cause: error });
   }
 }
 

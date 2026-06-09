@@ -82,7 +82,7 @@ export async function getAsientosDisponibles(funcionId: string): Promise<Asiento
   const res = await apiFetch<ApiResponse<AsientoDisponible[]>>(
     `/api/reservas/asientos-disponibles/${funcionId}`
   );
-  return (res as any).data ?? [];
+  return res.data ?? [];
 }
 
 export async function getMisReservas(): Promise<Reserva[]> {

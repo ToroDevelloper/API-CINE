@@ -9,15 +9,16 @@ import { Button } from './ui/Button';
 const PeliculasList: React.FC = () => {
     const [peliculas, setPeliculas] = useState<Pelicula[]>([]);
     const [error, setError] = useState('');
-    const [selectedPelicula, setSelectedPelicula] = useState<any>(null);
+    const [selectedPelicula, setSelectedPelicula] = useState<Pelicula | null>(null);
 
     useEffect(() => {
         const fetchPeliculas = async () => {
             try {
                 const data = await getPeliculas();
                 setPeliculas(data);
-            } catch (err: any) {
-                setError(err.response?.data?.message || 'Error al cargar las películas');
+            } catch (err: unknown) {
+                const axiosError = err as { response?: { data?: { message?: string } } };
+                setError(axiosError.response?.data?.message || 'Error al cargar las películas');
             }
         };
         fetchPeliculas();
@@ -34,8 +35,8 @@ const PeliculasList: React.FC = () => {
             )}
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {peliculas.map((pelicula: any) => (
-                    <div key={pelicula.id} onClick={() => setSelectedPelicula(pelicula)} className="cursor-pointer">
+                {peliculas.map((pelicula) => (
+                    <div key={pelicula._id} onClick={() => setSelectedPelicula(pelicula)} className="cursor-pointer">
                         <Card hover>
                             <CardHeader 
                                 title={pelicula.titulo} 

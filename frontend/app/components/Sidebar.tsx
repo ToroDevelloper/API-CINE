@@ -37,7 +37,9 @@ export default function Sidebar() {
   const isActive = (path?: string) => path ? location.pathname === path : false;
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setMobileOpen(false);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [location.pathname]);
 
   useEffect(() => {

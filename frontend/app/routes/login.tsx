@@ -5,7 +5,7 @@ import type { Route } from "./+types/login";
 import { useState } from "react";
 import { Mail, Lock } from "lucide-react";
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_args: Route.MetaArgs) {
   return [{ title: "Iniciar Sesión - API CINE" }];
 }
 

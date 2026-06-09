@@ -53,10 +53,9 @@ function FuncionesContent() {
       } catch (e) {
         if (!alive) return;
         setError(e instanceof Error ? e.message : "Error cargando datos");
-      } finally {
-        if (!alive) return;
-        setIsLoading(false);
       }
+      if (!alive) return;
+      setIsLoading(false);
     })();
     return () => { alive = false; };
   }, []);
