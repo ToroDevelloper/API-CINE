@@ -1,5 +1,6 @@
 module.exports = {
   testEnvironment: 'node',
+  testPathIgnorePatterns: ['/node_modules/', '/frontend/'],
   collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.js',
