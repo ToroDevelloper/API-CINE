@@ -1,5 +1,6 @@
 // Middleware para manejar errores globales
-const errorHandler = (err, req, res, next) => {
+// eslint-disable-next-line no-unused-vars
+const errorHandler = (err, req, res, _next) => {
     let error = { ...err };
     error.message = err.message;
 
@@ -44,7 +45,8 @@ const errorHandler = (err, req, res, next) => {
 };
 
 // Middleware para rutas no encontradas
-const notFound = (req, res, next) => {
+// eslint-disable-next-line no-unused-vars
+const notFound = (req, res, _next) => {
     res.status(404).json({
         success: false,
         message: `Ruta ${req.originalUrl} no encontrada`
