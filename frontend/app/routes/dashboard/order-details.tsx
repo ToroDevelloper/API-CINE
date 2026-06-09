@@ -26,6 +26,7 @@ export default function OrderDetails() {
   const [cardCvv, setCardCvv] = useState("");
   const [cardHolder, setCardHolder] = useState("");
   const [step, setStep] = useState<"review" | "payment" | "confirmed">("review");
+  const [referencia] = useState(() => Math.random().toString(36).slice(2, 8).toUpperCase());
 
   if (!funcionId && asientos.length === 0 && snacks.length === 0) {
     return (
@@ -510,7 +511,7 @@ export default function OrderDetails() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-xs text-[#71717A]">Referencia</span>
-                      <span className="text-xs font-bold text-[#E50914]">RES-{Math.random().toString(36).slice(2, 8).toUpperCase()}</span>
+                      <span className="text-xs font-bold text-[#E50914]">RES-{referencia}</span>
                     </div>
                   </div>
                 </div>

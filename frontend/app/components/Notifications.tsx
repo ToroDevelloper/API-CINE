@@ -3,13 +3,6 @@ import type { useToastStore } from "../stores/useToastStore";
 
 type Toast = ReturnType<typeof useToastStore.getState>["toasts"][number];
 
-/**
- * Componentes de Alertas y Notificaciones Profesionales
- */
-
-// ============================================================================
-// ALERT
-// ============================================================================
 
 type AlertType = "success" | "error" | "warning" | "info";
 
@@ -111,16 +104,6 @@ export function Alert({
   );
 }
 
-// ============================================================================
-// TOAST CONTAINER (Notificación temporal)
-// ============================================================================
-
-interface ToastProps {
-  type: AlertType;
-  title: string;
-  description?: string;
-  duration?: number;
-}
 
 export function ToastContainer({
   toasts,
@@ -146,9 +129,6 @@ export function ToastContainer({
   );
 }
 
-// ============================================================================
-// BADGE
-// ============================================================================
 
 type BadgeVariant = "primary" | "success" | "warning" | "error" | "info";
 
@@ -187,10 +167,6 @@ export function Badge({ variant = "primary", children, icon }: BadgeProps) {
   );
 }
 
-// ============================================================================
-// LOADING SPINNER
-// ============================================================================
-
 interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
   text?: string;
@@ -220,9 +196,6 @@ export function LoadingSpinner({ size = "md", text }: LoadingSpinnerProps) {
   );
 }
 
-// ============================================================================
-// SKELETON (Placeholder de carga)
-// ============================================================================
 
 interface SkeletonProps {
   className?: string;
@@ -250,9 +223,6 @@ export function Skeleton({ className = "h-8 w-full", count = 1 }: SkeletonProps)
   );
 }
 
-// ============================================================================
-// PROGRESS BAR
-// ============================================================================
 
 interface ProgressProps {
   value: number;
@@ -291,9 +261,6 @@ export function Progress({
   );
 }
 
-// ============================================================================
-// DIVIDER
-// ============================================================================
 
 interface DividerProps {
   text?: string;

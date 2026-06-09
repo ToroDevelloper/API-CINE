@@ -29,12 +29,18 @@ export default function Reservas() {
   const { addToast } = useAppToast();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  if (user?.rol === "admin") return null;
 
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [detailReserva, setDetailReserva] = useState<Reserva | null>(null);
+
+  const stats = useMemo(() => {
+    const activas = reservas.filter(
+      (r) => r.estado === "confirmada" || r.estado === "pendiente"
+    ).length;
+    return { total: reservas.length, activas };
+  }, [reservas]);
 
   useEffect(() => {
     let alive = true;
@@ -46,14 +52,15 @@ export default function Reservas() {
         setReservas(data);
       } catch (e) {
         if (!alive) return;
-        try { addToast({ type: "error", title: e instanceof Error ? e.message : "Error cargando reservas" }); } catch {}
-      } finally {
-        if (!alive) return;
-        setIsLoading(false);
+        addToast({ type: "error", title: e instanceof Error ? e.message : "Error cargando reservas" });
       }
+      if (!alive) return;
+      setIsLoading(false);
     })();
     return () => { alive = false; };
-  }, []);
+  }, [addToast]);
+
+  if (user?.rol === "admin") return null;
 
   const handleCancelar = async () => {
     if (!cancelId) return;
@@ -62,20 +69,11 @@ export default function Reservas() {
       const data = await getMisReservas();
       setReservas(data);
       setCancelId(null);
-      try { addToast({ type: "success", title: "Reserva cancelada" }); } catch {}
+      addToast({ type: "success", title: "Reserva cancelada" });
     } catch (e) {
-      try { addToast({ type: "error", title: e instanceof Error ? e.message : "Error cancelando" }); } catch {}
+      addToast({ type: "error", title: e instanceof Error ? e.message : "Error cancelando" });
     }
   };
-
-  const stats = useMemo(() => {
-    const activas = reservas.filter(
-      (r) => r.estado === "confirmada" || r.estado === "pendiente"
-    ).length;
-    return { total: reservas.length, activas };
-  }, [reservas]);
-
-  const getInitials = (name: string) => name.charAt(0).toUpperCase();
 
   if (isLoading) {
     return (

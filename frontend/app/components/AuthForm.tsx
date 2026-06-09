@@ -27,8 +27,9 @@ const AuthForm: React.FC = () => {
                 await register({ nombre: formData.nombre, apellido: formData.apellido, email: formData.email, password: formData.password });
                 alert('Registro exitoso');
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Error desconocido');
+        } catch (err: unknown) {
+            const axiosError = err as { response?: { data?: { message?: string } } };
+            setError(axiosError.response?.data?.message || 'Error desconocido');
         } finally {
             setLoading(false);
         }
