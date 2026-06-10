@@ -9,7 +9,7 @@ Este documento deja la guia operativa para validar la parte de Persona 4 en las 
 - Variable obligatoria en Render:
 
 ```text
-VITE_API_URL=https://URL-REAL-DEL-BACKEND-RENDER
+VITE_API_URL=https://api-cine-backend.onrender.com
 ```
 
 - La URL del backend no debe terminar en `/`.

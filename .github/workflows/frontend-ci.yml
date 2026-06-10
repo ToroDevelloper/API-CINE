@@ -23,7 +23,7 @@ jobs:
       run:
         working-directory: frontend
     env:
-      VITE_API_URL: http://localhost:3001
+      VITE_API_URL: https://api-cine-backend.onrender.com
     steps:
       - name: Checkout
         uses: actions/checkout@v4

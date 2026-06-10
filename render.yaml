@@ -18,7 +18,7 @@ services:
       - key: PORT
         value: 3000
       - key: VITE_API_URL
-        sync: false
+        value: https://api-cine-backend.onrender.com
 
   - type: web
     name: api-cine-backend
