@@ -3,23 +3,25 @@ import { render, screen, waitFor } from '@testing-library/react';
 import Home from '../../app/routes/home';
 import { MemoryRouter } from 'react-router';
 import { useAuthStore } from '../../app/stores/useAuthStore';
+import { getPeliculas } from '../../app/services/peliculaService';
 
 // Mock Zustand
 vi.mock('../../app/stores/useAuthStore', () => ({
   useAuthStore: vi.fn(),
 }));
 
+vi.mock('../../app/services/peliculaService', () => ({
+  getPeliculas: vi.fn(),
+}));
+
 describe('Home Route', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    global.fetch = vi.fn();
     (useAuthStore as any).mockImplementation((selector: any) => selector({ isAuthenticated: false }));
   });
 
   it('renders loading state/empty state initially', async () => {
-    (global.fetch as any).mockResolvedValueOnce({
-      json: async () => ({ data: [] })
-    });
+    vi.mocked(getPeliculas).mockResolvedValueOnce([]);
 
     render(
       <MemoryRouter>
@@ -46,9 +48,7 @@ describe('Home Route', () => {
       { _id: '8', titulo: 'Pelicula 8', sinopsis: 'Sinopsis 8', duracion_min: 90, clasificacion: 'B', poster_url: 'img8.jpg' },
     ];
 
-    (global.fetch as any).mockResolvedValueOnce({
-      json: async () => ({ data: mockPeliculas })
-    });
+    vi.mocked(getPeliculas).mockResolvedValueOnce(mockPeliculas);
 
     render(
       <MemoryRouter>
@@ -74,9 +74,7 @@ describe('Home Route', () => {
       { _id: '1', titulo: 'Pelicula 1', sinopsis: 'Sinopsis 1', duracion_min: 120, clasificacion: 'A' }
     ];
 
-    (global.fetch as any).mockResolvedValueOnce({
-      json: async () => ({ data: mockPeliculas })
-    });
+    vi.mocked(getPeliculas).mockResolvedValueOnce(mockPeliculas);
 
     render(
       <MemoryRouter>

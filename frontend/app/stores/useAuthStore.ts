@@ -33,7 +33,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   init: async () => {
     set({ isLoading: true });
     try {
-      const response = await apiFetch<ApiResponse<AuthUser>>("/api/auth/me");
+      const response = await apiFetch<ApiResponse<AuthUser>>("/api/auth/me", {
+        skipAuthRedirect: true,
+      });
       const user = response?.data ?? null;
       set({ user, isAuthenticated: !!user });
     } catch {

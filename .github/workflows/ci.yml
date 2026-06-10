@@ -60,6 +60,8 @@ jobs:
   frontend-ci:
     name: Frontend CI
     runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: http://localhost:3001
     steps:
       - name: Checkout
         uses: actions/checkout@v4

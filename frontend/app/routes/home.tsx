@@ -2,16 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Play, Plus, Clapperboard } from "lucide-react";
 import { useAuthStore } from "../stores/useAuthStore";
-
-interface Pelicula {
-  _id: string;
-  titulo: string;
-  sinopsis: string;
-  duracion_min: number;
-  clasificacion: string;
-  poster_url?: string;
-  genero?: string[];
-}
+import { getPeliculas, type Pelicula } from "../services/peliculaService";
 
 export default function Home() {
   const [peliculas, setPeliculas] = useState<Pelicula[]>([]);
@@ -19,14 +10,18 @@ export default function Home() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/peliculas")
-      .then(r => r.json())
-      .then(data => {
-        const pelis = data.data || [];
+    let isMounted = true;
+    getPeliculas()
+      .then((pelis) => {
+        if (!isMounted) return;
         setPeliculas(pelis);
         if (pelis.length > 0) setPeliculaDestacada(pelis[0]);
       })
-      .catch(() => {});
+      .catch(() => undefined);
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (

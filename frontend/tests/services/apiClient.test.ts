@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { apiFetch } from '../../app/services/apiClient';
+import { ApiRequestError, apiFetch } from '../../app/services/apiClient';
 import axiosInstance from '../../app/services/axiosInstance';
 
 vi.mock('../../app/services/axiosInstance');
@@ -54,10 +54,14 @@ describe('apiClient', () => {
 
   it('throws mapped error from response', async () => {
     vi.mocked(axiosInstance.request).mockRejectedValueOnce({
-      response: { data: { message: 'Custom error' } }
+      response: { status: 403, data: { message: 'Custom error' } }
     });
     
-    await expect(apiFetch('/test')).rejects.toThrow('Custom error');
+    await expect(apiFetch('/test')).rejects.toMatchObject({
+      name: 'ApiRequestError',
+      message: 'Custom error',
+      status: 403,
+    } satisfies Partial<ApiRequestError>);
   });
 
   it('throws mapped error from network failure', async () => {
