@@ -5,7 +5,7 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 
-ARG VITE_API_URL=http://localhost:3001
+ARG VITE_API_URL=https://api-cine-backend.onrender.com
 ENV VITE_API_URL=${VITE_API_URL}
 
 COPY frontend ./

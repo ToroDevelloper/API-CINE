@@ -9,7 +9,7 @@
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "react-router typegen && tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
