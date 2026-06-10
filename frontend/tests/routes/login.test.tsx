@@ -42,6 +42,12 @@ describe('Login Route', () => {
     expect(screen.getByPlaceholderText('correo@ejemplo.com')).toBeInTheDocument();
   });
 
+  it('exports meta with correct title', async () => {
+    const { meta } = await import('../../app/routes/login');
+    const result = meta({} as any);
+    expect(result).toEqual([{ title: "Iniciar Sesión - API CINE" }]);
+  });
+
   it('handles successful login', async () => {
     mockLogin.mockResolvedValueOnce(true);
     
