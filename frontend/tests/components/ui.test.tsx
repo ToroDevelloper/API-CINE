@@ -51,4 +51,10 @@ describe('UI Components', () => {
     const input = screen.getByPlaceholderText('Error input');
     expect(input.className).toContain('border-red-500');
   });
+
+  it('renders Input label and custom class', () => {
+    render(<Input label="Correo" placeholder="Email" className="custom-input" />);
+    expect(screen.getByText('Correo')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Email').className).toContain('custom-input');
+  });
 });

@@ -88,4 +88,18 @@ describe('Home Route', () => {
       expect(screen.getByText('Reservar').closest('a')).toHaveAttribute('href', '/dashboard/reservas?peliculaId=1');
     });
   });
+
+  it('keeps empty state when peliculas request fails', async () => {
+    vi.mocked(getPeliculas).mockRejectedValueOnce(new Error('Fetch failed'));
+
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('No hay películas disponibles en este momento.')).toBeInTheDocument();
+    });
+  });
 });

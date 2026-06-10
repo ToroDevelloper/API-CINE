@@ -47,7 +47,7 @@ describe('Dashboard Home Route', () => {
       { _id: '4', titulo: 'Peli 4', sinopsis: 'S4', duracion_min: 90, clasificacion: 'B' },
       { _id: '5', titulo: 'Peli 5', sinopsis: 'S5', duracion_min: 90, clasificacion: 'B' },
       { _id: '6', titulo: 'Peli 6', sinopsis: 'S6', duracion_min: 90, clasificacion: 'B' },
-      { _id: '7', titulo: 'Peli 7', sinopsis: 'S7', duracion_min: 90, clasificacion: 'B' }, // 7th movie
+      { _id: '7', titulo: 'Peli 7', sinopsis: 'S7', duracion_min: 90, clasificacion: 'B', poster_url: 'img7.jpg' }, // 7th movie
     ];
 
     (getPeliculas as any).mockResolvedValueOnce(mockPeliculas);

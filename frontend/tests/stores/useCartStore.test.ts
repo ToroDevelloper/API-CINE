@@ -123,4 +123,12 @@ describe('useCartStore', () => {
     expect(result.current.total).toBe(15);
     expect(result.current.itemCount).toBe(2);
   });
+
+  it('useCartTotals hook returns zero values when cart is empty', () => {
+    const { result } = renderHook(() => useCartTotals());
+    expect(result.current.subtotalAsientos).toBe(0);
+    expect(result.current.subtotalSnacks).toBe(0);
+    expect(result.current.total).toBe(0);
+    expect(result.current.itemCount).toBe(0);
+  });
 });

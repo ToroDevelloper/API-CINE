@@ -102,4 +102,17 @@ describe('Login Route', () => {
       expect(screen.getByText('Error al iniciar sesión. Intenta de nuevo.')).toBeInTheDocument();
     });
   });
+
+  it('shows loading state while submitting', () => {
+    (useAuthStore as any).mockImplementation((selector: any) => {
+      const state = { login: mockLogin, isLoading: true };
+      return selector(state);
+    });
+
+    render(<Login />);
+
+    expect(screen.getByRole('button', { name: 'Iniciando sesión...' })).toBeDisabled();
+    expect(screen.getByPlaceholderText('correo@ejemplo.com')).toBeDisabled();
+    expect(screen.getByPlaceholderText('••••••••')).toBeDisabled();
+  });
 });

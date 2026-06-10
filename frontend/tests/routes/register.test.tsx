@@ -94,4 +94,19 @@ describe('Register action', () => {
     const result = await action({ request } as any);
     expect(result).toEqual({ error: 'Invalid email' });
   });
+
+  it('handles failed registration with non-Error values', async () => {
+    (apiRegister as any).mockRejectedValueOnce('network down');
+
+    const formData = new FormData();
+    formData.append('email', 'test@test.com');
+    formData.append('password', '123456');
+    formData.append('nombre', 'Juan');
+    formData.append('apellido', 'Perez');
+
+    const request = new Request('http://localhost/register', { method: 'POST', body: formData });
+
+    const result = await action({ request } as any);
+    expect(result).toEqual({ error: 'Error de conexión con el servidor' });
+  });
 });
