@@ -37,14 +37,6 @@ npx playwright install chromium --with-deps
 npm run test:e2e
 ```
 
-En Fedora local, `npx playwright install chromium --with-deps` puede pedir `sudo`. Si no hay permisos interactivos, instalar solo el navegador para prueba local:
-
-```bash
-npx playwright install chromium
-npm run test:e2e
-```
-
-En GitHub Actions se mantiene `--with-deps` porque el runner si puede instalar dependencias del sistema.
 
 ## Lighthouse en produccion
 
