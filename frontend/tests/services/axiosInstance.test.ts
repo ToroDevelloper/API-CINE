@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axiosInstance from '../../app/services/axiosInstance';
+import axiosInstance, { API_BASE_URL } from '../../app/services/axiosInstance';
 import axios from 'axios';
 
 describe('axiosInstance', () => {
+  const expectedBaseURL = API_BASE_URL.replace(/\/+$/, '').replace(/\/api$/, '');
+
   beforeEach(() => {
     vi.restoreAllMocks();
     vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -12,7 +14,7 @@ describe('axiosInstance', () => {
   });
 
   it('has correct baseURL', () => {
-    expect(axiosInstance.defaults.baseURL).toBe('http://localhost:3000');
+    expect(axiosInstance.defaults.baseURL).toBe(expectedBaseURL);
     expect(axiosInstance.defaults.withCredentials).toBe(true);
   });
 
@@ -69,7 +71,7 @@ describe('axiosInstance', () => {
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener.mock.calls[0][0].detail).toEqual({ message: 'Sesion invalida' });
-    expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/api/auth/logout', undefined, {
+    expect(axios.post).toHaveBeenCalledWith(`${expectedBaseURL}/api/auth/logout`, undefined, {
       withCredentials: true,
     });
     expect(localStorage.getItem('token')).toBeNull();
