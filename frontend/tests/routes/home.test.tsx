@@ -37,7 +37,13 @@ describe('Home Route', () => {
   it('renders peliculas and featured pelicula', async () => {
     const mockPeliculas = [
       { _id: '1', titulo: 'Pelicula 1', sinopsis: 'Sinopsis 1', duracion_min: 120, clasificacion: 'A', poster_url: 'img1.jpg' },
-      { _id: '2', titulo: 'Pelicula 2', sinopsis: 'Sinopsis 2', duracion_min: 90, clasificacion: 'B' }
+      { _id: '2', titulo: 'Pelicula 2', sinopsis: 'Sinopsis 2', duracion_min: 90, clasificacion: 'B' },
+      { _id: '3', titulo: 'Pelicula 3', sinopsis: 'Sinopsis 3', duracion_min: 90, clasificacion: 'B' },
+      { _id: '4', titulo: 'Pelicula 4', sinopsis: 'Sinopsis 4', duracion_min: 90, clasificacion: 'B' },
+      { _id: '5', titulo: 'Pelicula 5', sinopsis: 'Sinopsis 5', duracion_min: 90, clasificacion: 'B' },
+      { _id: '6', titulo: 'Pelicula 6', sinopsis: 'Sinopsis 6', duracion_min: 90, clasificacion: 'B' },
+      { _id: '7', titulo: 'Pelicula 7', sinopsis: 'Sinopsis 7', duracion_min: 90, clasificacion: 'B' },
+      { _id: '8', titulo: 'Pelicula 8', sinopsis: 'Sinopsis 8', duracion_min: 90, clasificacion: 'B', poster_url: 'img8.jpg' },
     ];
 
     (global.fetch as any).mockResolvedValueOnce({
