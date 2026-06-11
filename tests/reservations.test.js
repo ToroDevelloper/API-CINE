@@ -64,4 +64,83 @@ describe('Reservations Endpoints', () => {
         const res = await request(app).get('/api/reservas/mis-reservas').set('Cookie', cookies);
         expect(res.statusCode).toBe(200);
     });
+
+    it('debe obtener todas las reservas como admin', async () => {
+        await request(app).post('/api/reservas').set('Cookie', cookies).send({
+            funcion_id: funcionId, asientos_ids: [asientoId]
+        });
+        const res = await request(app).get('/api/reservas').set('Cookie', adminCookies);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.count).toBeGreaterThanOrEqual(1);
+    });
+
+    it('debe obtener una reserva por ID', async () => {
+        const reserva = await request(app).post('/api/reservas').set('Cookie', cookies).send({
+            funcion_id: funcionId, asientos_ids: [asientoId]
+        });
+        const res = await request(app).get(`/api/reservas/${reserva.body.data._id}`).set('Cookie', cookies);
+        expect(res.statusCode).toBe(200);
+    });
+
+    it('debe retornar 404 al obtener reserva inexistente', async () => {
+        const fakeId = '000000000000000000000000';
+        const res = await request(app).get(`/api/reservas/${fakeId}`).set('Cookie', cookies);
+        expect(res.statusCode).toBe(404);
+    });
+
+    it('debe actualizar estado de reserva', async () => {
+        const reserva = await request(app).post('/api/reservas').set('Cookie', cookies).send({
+            funcion_id: funcionId, asientos_ids: [asientoId]
+        });
+        const res = await request(app).put(`/api/reservas/${reserva.body.data._id}`).set('Cookie', cookies).send({
+            estado: 'cancelada'
+        });
+        expect(res.statusCode).toBe(200);
+    });
+
+    it('debe retornar 400 al actualizar con estado inválido', async () => {
+        const reserva = await request(app).post('/api/reservas').set('Cookie', cookies).send({
+            funcion_id: funcionId, asientos_ids: [asientoId]
+        });
+        const res = await request(app).put(`/api/reservas/${reserva.body.data._id}`).set('Cookie', cookies).send({
+            estado: 'invalid-status'
+        });
+        expect(res.statusCode).toBe(400);
+    });
+
+    it('debe cancelar una reserva', async () => {
+        const reserva = await request(app).post('/api/reservas').set('Cookie', cookies).send({
+            funcion_id: funcionId, asientos_ids: [asientoId]
+        });
+        const res = await request(app).delete(`/api/reservas/${reserva.body.data._id}`).set('Cookie', cookies);
+        expect(res.statusCode).toBe(200);
+    });
+
+    it('debe retornar 404 al cancelar reserva inexistente', async () => {
+        const fakeId = '000000000000000000000000';
+        const res = await request(app).delete(`/api/reservas/${fakeId}`).set('Cookie', cookies);
+        expect(res.statusCode).toBe(404);
+    });
+
+    it('debe retornar 400 con datos de reserva inválidos', async () => {
+        const res = await request(app).post('/api/reservas').set('Cookie', cookies).send({
+            funcion_id: '', asientos_ids: []
+        });
+        expect(res.statusCode).toBe(400);
+    });
+
+    it('debe obtener asientos disponibles para una función', async () => {
+        await request(app).post('/api/reservas').set('Cookie', cookies).send({
+            funcion_id: funcionId, asientos_ids: [asientoId]
+        });
+        const res = await request(app).get(`/api/reservas/asientos-disponibles/${funcionId}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.data).toBeDefined();
+    });
+
+    it('debe retornar 404 al consultar asientos de función inexistente', async () => {
+        const fakeId = '000000000000000000000000';
+        const res = await request(app).get(`/api/reservas/asientos-disponibles/${fakeId}`);
+        expect(res.statusCode).toBe(404);
+    });
 });

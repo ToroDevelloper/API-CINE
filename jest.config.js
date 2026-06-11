@@ -1,5 +1,8 @@
+process.env.NODE_ENV = 'test';
+
 module.exports = {
   testEnvironment: 'node',
+  maxWorkers: 1,
   testPathIgnorePatterns: ['/node_modules/', '/frontend/'],
   collectCoverage: true,
   collectCoverageFrom: [
@@ -9,10 +12,10 @@ module.exports = {
   ],
   coverageThreshold: {
     global: {
-      branches: 40,
-      functions: 70,
-      lines: 70,
-      statements: 65,
+      branches: 69,
+      functions: 88,
+      lines: 82,
+      statements: 80,
     },
   },
 };

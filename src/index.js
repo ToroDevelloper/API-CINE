@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const swaggerUi = require('swagger-ui-express');
@@ -13,7 +14,19 @@ const { errorHandler, notFound } = require('./middlewares');
 // Crear app
 const app = express();
 
-// Middlewares
+// Health check antes de middlewares de red (keep-alive)
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        success: true,
+        status: 'ok',
+        uptime: process.uptime()
+    });
+});
+
+// Seguridad de red
+app.use(helmet());
+
+// CORS con filtro seguro
 const defaultOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
 const allowedOrigins = (process.env.CORS_ORIGIN || defaultOrigins.join(','))
     .split(',')
@@ -50,15 +63,6 @@ app.get('/', (req, res) => {
         message: 'API de Cine - Bienvenido',
         version: '1.0.0',
         endpoints: '/api'
-    });
-});
-
-// Health check para Render
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        success: true,
-        status: 'ok',
-        uptime: process.uptime()
     });
 });
 
