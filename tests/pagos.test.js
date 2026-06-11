@@ -61,4 +61,83 @@ describe('Pagos Endpoints', () => {
         const res = await request(app).get('/api/pagos/mis-pagos').set('Cookie', cookies);
         expect(res.statusCode).toBe(200);
     });
+
+    it('debe obtener todos los pagos como admin', async () => {
+        await request(app).post('/api/pagos').set('Cookie', cookies).send({
+            reserva_id: reservaId, metodo_pago: 'efectivo'
+        });
+        const res = await request(app).get('/api/pagos').set('Cookie', adminCookies);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.count).toBeGreaterThanOrEqual(1);
+    });
+
+    it('debe obtener un pago por ID', async () => {
+        const pagoRes = await request(app).post('/api/pagos').set('Cookie', cookies).send({
+            reserva_id: reservaId, metodo_pago: 'efectivo'
+        });
+        const res = await request(app).get(`/api/pagos/${pagoRes.body.data._id}`).set('Cookie', cookies);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.data.metodo_pago).toBe('efectivo');
+    });
+
+    it('debe retornar 404 al obtener pago inexistente', async () => {
+        const fakeId = '000000000000000000000000';
+        const res = await request(app).get(`/api/pagos/${fakeId}`).set('Cookie', cookies);
+        expect(res.statusCode).toBe(404);
+    });
+
+    it('debe retornar 403 al ver pago de otro usuario', async () => {
+        const pagoRes = await request(app).post('/api/pagos').set('Cookie', cookies).send({
+            reserva_id: reservaId, metodo_pago: 'efectivo'
+        });
+        const resOther = await request(app).post('/api/auth/registro').send({
+            nombre: 'Other', apellido: 'User', email: 'other@test.com', password: 'password123'
+        });
+        const otherCookies = resOther.headers['set-cookie'];
+        const res = await request(app).get(`/api/pagos/${pagoRes.body.data._id}`).set('Cookie', otherCookies);
+        expect(res.statusCode).toBe(403);
+    });
+
+    it('debe actualizar estado del pago como admin', async () => {
+        const pagoRes = await request(app).post('/api/pagos').set('Cookie', cookies).send({
+            reserva_id: reservaId, metodo_pago: 'efectivo'
+        });
+        const res = await request(app).put(`/api/pagos/${pagoRes.body.data._id}`).set('Cookie', adminCookies).send({
+            estado: 'fallido'
+        });
+        expect(res.statusCode).toBe(200);
+        expect(res.body.data.estado).toBe('fallido');
+    });
+
+    it('debe retornar 404 al actualizar pago inexistente', async () => {
+        const fakeId = '000000000000000000000000';
+        const res = await request(app).put(`/api/pagos/${fakeId}`).set('Cookie', adminCookies).send({
+            estado: 'fallido'
+        });
+        expect(res.statusCode).toBe(404);
+    });
+
+    it('debe solicitar reembolso', async () => {
+        const pagoRes = await request(app).post('/api/pagos').set('Cookie', cookies).send({
+            reserva_id: reservaId, metodo_pago: 'efectivo'
+        });
+        const res = await request(app).post(`/api/pagos/${pagoRes.body.data._id}/reembolso`).set('Cookie', cookies);
+        expect(res.statusCode).toBe(200);
+    });
+
+    it('debe retornar 404 al reembolsar pago inexistente', async () => {
+        const fakeId = '000000000000000000000000';
+        const res = await request(app).post(`/api/pagos/${fakeId}/reembolso`).set('Cookie', cookies);
+        expect(res.statusCode).toBe(404);
+    });
+
+    it('debe retornar 400 al pagar reserva ya pagada', async () => {
+        await request(app).post('/api/pagos').set('Cookie', cookies).send({
+            reserva_id: reservaId, metodo_pago: 'efectivo'
+        });
+        const res = await request(app).post('/api/pagos').set('Cookie', cookies).send({
+            reserva_id: reservaId, metodo_pago: 'efectivo'
+        });
+        expect(res.statusCode).toBe(400);
+    });
 });

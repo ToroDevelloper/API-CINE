@@ -1,6 +1,8 @@
 import { type RouteConfig, index, route, layout } from "@react-router/dev/routes";
 
 export default [
+  route("/favicon.ico", "routes/favicon[.]ico.ts"),
+
   layout("routes/layout.public.tsx", [
     index("routes/home.tsx"),
     route("/login", "routes/login.tsx"),
