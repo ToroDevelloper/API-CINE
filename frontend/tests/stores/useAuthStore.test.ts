@@ -79,13 +79,13 @@ describe('useAuthStore', () => {
   });
 
   it('init with null response', async () => {
-    vi.mocked(apiClient.apiFetch).mockResolvedValueOnce(null as any);
+    vi.mocked(apiClient.apiFetch).mockResolvedValueOnce(null as unknown as never);
     await useAuthStore.getState().init();
     expect(useAuthStore.getState().isAuthenticated).toBe(false);
   });
 
   it('login with null response', async () => {
-    vi.mocked(apiClient.apiFetch).mockResolvedValueOnce({ data: null as any } as any);
+    vi.mocked(apiClient.apiFetch).mockResolvedValueOnce({ data: null } as never);
     const result = await useAuthStore.getState().login('test@test.com', '123456');
     expect(result).toBe(false);
   });

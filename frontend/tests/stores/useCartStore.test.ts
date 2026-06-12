@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useCartStore, useCartTotals } from '../../app/stores/useCartStore';
+import type { CartAsiento } from '../../app/stores/useCartStore';
+import type { Snack } from '../../app/services/snackService';
 import { renderHook } from '@testing-library/react';
 
 describe('useCartStore', () => {
@@ -20,9 +22,30 @@ describe('useCartStore', () => {
     expect(useCartStore.getState().funcionInfo).toEqual(info);
   });
 
+  const makeAsiento = (overrides: Partial<CartAsiento> = {}): CartAsiento => ({
+    _id: 'a1',
+    sala_id: '',
+    fila: 'A',
+    numero: 1,
+    tipo: 'normal',
+    disponible: true,
+    precio: 10,
+    ...overrides,
+  });
+
+  const makeSnack = (overrides: Partial<Snack> = {}): Snack => ({
+    _id: 's1',
+    nombre: 'Popcorn',
+    descripcion: '',
+    precio: 5,
+    categoria: '',
+    disponible: true,
+    ...overrides,
+  });
+
   it('manages asientos correctly', () => {
-    const asiento1 = { _id: 'a1', fila: 'A', numero: 1, tipo: 'normal', estado: 'disponible', precio: 10 } as any;
-    const asiento2 = { _id: 'a2', fila: 'A', numero: 2, tipo: 'normal', estado: 'disponible', precio: 10 } as any;
+    const asiento1 = makeAsiento();
+    const asiento2 = makeAsiento({ _id: 'a2', numero: 2 });
 
     useCartStore.getState().addAsiento(asiento1);
     expect(useCartStore.getState().asientos).toHaveLength(1);
@@ -50,8 +73,8 @@ describe('useCartStore', () => {
   });
 
   it('manages snacks correctly', () => {
-    const snack1 = { _id: 's1', nombre: 'Popcorn', precio: 5 } as any;
-    const snack2 = { _id: 's2', nombre: 'Soda', precio: 3 } as any;
+    const snack1 = makeSnack();
+    const snack2 = makeSnack({ _id: 's2', nombre: 'Soda', precio: 3 });
 
     useCartStore.getState().addSnack(snack1);
     expect(useCartStore.getState().snacks).toHaveLength(1);
@@ -75,7 +98,7 @@ describe('useCartStore', () => {
   });
 
   it('updateSnackCantidad updates correctly', () => {
-    const mockSnack = { _id: 's1', nombre: 'Popcorn', precio: 5 } as any;
+    const mockSnack = makeSnack();
     useCartStore.getState().addSnack(mockSnack, 1);
     useCartStore.getState().updateSnackCantidad('s1', 5);
     const state = useCartStore.getState();
@@ -87,8 +110,8 @@ describe('useCartStore', () => {
   });
 
   it('clearCart empties everything', () => {
-    const mockAsiento = { _id: 'a1', fila: 'A', numero: 1, tipo: 'normal', estado: 'disponible', precio: 10 } as any;
-    const mockSnack = { _id: 's1', nombre: 'Popcorn', precio: 5 } as any;
+    const mockAsiento = makeAsiento();
+    const mockSnack = makeSnack();
     useCartStore.getState().addAsiento(mockAsiento);
     useCartStore.getState().addSnack(mockSnack, 1);
     
@@ -99,8 +122,8 @@ describe('useCartStore', () => {
   });
 
   it('calculates totals correctly (getters)', () => {
-    const asiento = { _id: 'a1', fila: 'A', numero: 1, tipo: 'normal', estado: 'disponible', precio: 10 } as any;
-    const snack = { _id: 's1', nombre: 'Popcorn', precio: 5 } as any;
+    const asiento = makeAsiento();
+    const snack = makeSnack();
 
     useCartStore.getState().addAsiento(asiento);
     useCartStore.getState().addSnack(snack);
@@ -111,8 +134,8 @@ describe('useCartStore', () => {
   });
 
   it('useCartTotals hook', () => {
-    const asiento = { _id: 'a1', fila: 'A', numero: 1, tipo: 'normal', estado: 'disponible', precio: 10 } as any;
-    const snack = { _id: 's1', nombre: 'Popcorn', precio: 5 } as any;
+    const asiento = makeAsiento();
+    const snack = makeSnack();
 
     useCartStore.getState().addAsiento(asiento);
     useCartStore.getState().addSnack(snack);

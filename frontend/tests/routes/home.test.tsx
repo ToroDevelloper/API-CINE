@@ -17,7 +17,7 @@ vi.mock('../../app/services/peliculaService', () => ({
 describe('Home Route', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useAuthStore as any).mockImplementation((selector: any) => selector({ isAuthenticated: false }));
+    vi.mocked(useAuthStore).mockImplementation((selector: (state: { isAuthenticated: boolean }) => unknown) => selector({ isAuthenticated: false }));
   });
 
   it('renders loading state/empty state initially', async () => {
@@ -68,7 +68,7 @@ describe('Home Route', () => {
   });
 
   it('changes links when authenticated', async () => {
-    (useAuthStore as any).mockImplementation((selector: any) => selector({ isAuthenticated: true }));
+    vi.mocked(useAuthStore).mockImplementation((selector: (state: { isAuthenticated: boolean }) => unknown) => selector({ isAuthenticated: true }));
     
     const mockPeliculas = [
       { _id: '1', titulo: 'Pelicula 1', sinopsis: 'Sinopsis 1', duracion_min: 120, clasificacion: 'A' }
