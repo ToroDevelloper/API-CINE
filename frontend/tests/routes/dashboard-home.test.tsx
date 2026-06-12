@@ -15,7 +15,7 @@ const mockNavigate = vi.fn();
 vi.mock('react-router', async (importOriginal) => {
   const actual = await importOriginal();
   return {
-    ...(actual as any),
+    ...(actual as Record<string, unknown>),
     useNavigate: () => mockNavigate,
   };
 });
@@ -26,7 +26,7 @@ describe('Dashboard Home Route', () => {
   });
 
   it('renders empty state initially or when no movies', async () => {
-    (getPeliculas as any).mockResolvedValueOnce([]);
+    vi.mocked(getPeliculas).mockResolvedValueOnce([]);
 
     render(
       <MemoryRouter>
@@ -50,7 +50,7 @@ describe('Dashboard Home Route', () => {
       { _id: '7', titulo: 'Peli 7', sinopsis: 'S7', duracion_min: 90, clasificacion: 'B', poster_url: 'img7.jpg' }, // 7th movie
     ];
 
-    (getPeliculas as any).mockResolvedValueOnce(mockPeliculas);
+    vi.mocked(getPeliculas).mockResolvedValueOnce(mockPeliculas);
 
     render(
       <MemoryRouter>
@@ -80,7 +80,7 @@ describe('Dashboard Home Route', () => {
   });
 
   it('handles getPeliculas error', async () => {
-    (getPeliculas as any).mockRejectedValueOnce(new Error('Fetch failed'));
+    vi.mocked(getPeliculas).mockRejectedValueOnce(new Error('Fetch failed'));
 
     render(
       <MemoryRouter>

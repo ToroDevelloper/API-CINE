@@ -2,6 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axiosInstance, { API_BASE_URL } from '../../app/services/axiosInstance';
 import axios from 'axios';
 
+interface AxiosInterceptorHandler {
+  fulfilled: (response: unknown) => unknown;
+  rejected: (error: unknown) => Promise<unknown>;
+}
+
+interface AxiosInterceptors {
+  response: { handlers: AxiosInterceptorHandler[] };
+}
+
+function getResponseInterceptor() {
+  return (axiosInstance.interceptors.response as unknown as AxiosInterceptors).handlers[0];
+}
+
 describe('axiosInstance', () => {
   const expectedBaseURL = API_BASE_URL.replace(/\/+$/, '').replace(/\/api$/, '');
 
@@ -19,14 +32,13 @@ describe('axiosInstance', () => {
   });
 
   it('intercepts response successfully', async () => {
-    // Interceptors in axios return the response for a fulfilled promise
-    const responseInterceptor = (axiosInstance.interceptors.response as any).handlers[0];
+    const responseInterceptor = getResponseInterceptor();
     const response = { data: 'success' };
     expect(responseInterceptor.fulfilled(response)).toEqual(response);
   });
 
   it('intercepts error with response data', async () => {
-    const responseInterceptor = (axiosInstance.interceptors.response as any).handlers[0];
+    const responseInterceptor = getResponseInterceptor();
     const error = { response: { data: 'error data' } };
     
     await expect(responseInterceptor.rejected(error)).rejects.toEqual(error);
@@ -34,7 +46,7 @@ describe('axiosInstance', () => {
   });
 
   it('emits forbidden event for 403 responses', async () => {
-    const responseInterceptor = (axiosInstance.interceptors.response as any).handlers[0];
+    const responseInterceptor = getResponseInterceptor();
     const listener = vi.fn();
     window.addEventListener('api:forbidden', listener);
 
@@ -53,7 +65,7 @@ describe('axiosInstance', () => {
   });
 
   it('uses fallback messages for forbidden responses without message', async () => {
-    const responseInterceptor = (axiosInstance.interceptors.response as any).handlers[0];
+    const responseInterceptor = getResponseInterceptor();
     const listener = vi.fn();
     window.addEventListener('api:forbidden', listener);
 
@@ -83,7 +95,7 @@ describe('axiosInstance', () => {
   });
 
   it('does not redirect for expected auth 401 responses', async () => {
-    const responseInterceptor = (axiosInstance.interceptors.response as any).handlers[0];
+    const responseInterceptor = getResponseInterceptor();
     const listener = vi.fn();
     window.addEventListener('api:unauthorized', listener);
     localStorage.setItem('token', 'keep');
@@ -110,7 +122,7 @@ describe('axiosInstance', () => {
   });
 
   it('clears client state and notifies backend for 401 responses', async () => {
-    const responseInterceptor = (axiosInstance.interceptors.response as any).handlers[0];
+    const responseInterceptor = getResponseInterceptor();
     const listener = vi.fn();
     window.addEventListener('api:unauthorized', listener);
     localStorage.setItem('token', 'stale');
@@ -137,7 +149,7 @@ describe('axiosInstance', () => {
   });
 
   it('intercepts error without response data', async () => {
-    const responseInterceptor = (axiosInstance.interceptors.response as any).handlers[0];
+    const responseInterceptor = getResponseInterceptor();
     const error = { message: 'Network error' };
     
     await expect(responseInterceptor.rejected(error)).rejects.toEqual(error);

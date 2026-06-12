@@ -1,11 +1,10 @@
 import { Form, useNavigate } from "react-router";
 import { useAuthStore } from "../stores/useAuthStore";
 import { useAppToast } from "../components/ToastProvider";
-import type { Route } from "./+types/login";
 import { useState } from "react";
 import { Mail, Lock } from "lucide-react";
 
-export function meta(_args: Route.MetaArgs) {
+export function meta() {
   return [{ title: "Iniciar Sesión - API CINE" }];
 }
 

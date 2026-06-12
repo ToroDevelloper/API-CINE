@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router';
 
 // Mock React Router
 vi.mock('react-router', () => ({
-  Form: ({ children, onSubmit }: any) => <form onSubmit={onSubmit}>{children}</form>,
+  Form: ({ children, onSubmit }: { children: React.ReactNode; onSubmit?: React.FormEventHandler<HTMLFormElement> }) => <form onSubmit={onSubmit}>{children}</form>,
   useNavigate: vi.fn(),
 }));
 
@@ -28,9 +28,9 @@ describe('Login Route', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useNavigate as any).mockReturnValue(mockNavigate);
-    (useAppToast as any).mockReturnValue({ addToast: mockAddToast });
-    (useAuthStore as any).mockImplementation((selector: any) => {
+    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+    vi.mocked(useAppToast).mockReturnValue({ addToast: mockAddToast });
+    vi.mocked(useAuthStore).mockImplementation((selector: (state: { login: typeof mockLogin; isLoading: boolean }) => unknown) => {
       const state = { login: mockLogin, isLoading: false };
       return selector(state);
     });
@@ -44,7 +44,7 @@ describe('Login Route', () => {
 
   it('exports meta with correct title', async () => {
     const { meta } = await import('../../app/routes/login');
-    const result = meta({} as any);
+    const result = meta();
     expect(result).toEqual([{ title: "Iniciar Sesión - API CINE" }]);
   });
 
@@ -104,7 +104,7 @@ describe('Login Route', () => {
   });
 
   it('shows loading state while submitting', () => {
-    (useAuthStore as any).mockImplementation((selector: any) => {
+    vi.mocked(useAuthStore).mockImplementation((selector: (state: { login: typeof mockLogin; isLoading: boolean }) => unknown) => {
       const state = { login: mockLogin, isLoading: true };
       return selector(state);
     });
